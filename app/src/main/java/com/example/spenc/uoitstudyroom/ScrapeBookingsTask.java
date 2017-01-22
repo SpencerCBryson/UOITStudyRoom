@@ -22,7 +22,6 @@ public class ScrapeBookingsTask extends AsyncTask<Void, Void, Void> {
         try {
             System.out.println("STARTING WEB SCRAPE\n");
 
-            System.setProperty("javax.net.ssl.trustStore", "clienttrust");
             SSLSocketFactory ssf = (SSLSocketFactory) SSLSocketFactory.getDefault();
             Socket sock = ssf.createSocket(InetAddress.getByName("rooms.library.dc-uoit.ca"), 443);
 
@@ -33,9 +32,36 @@ public class ScrapeBookingsTask extends AsyncTask<Void, Void, Void> {
             pw.print("User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36\r\n\r\n");
             pw.flush();
             BufferedReader br = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+
             String t;
-            while((t = br.readLine()) != null) System.out.println(t);
+            int content_length = -1;
+
+            // Get length of content being received
+            while((t = br.readLine()) != null) {
+                if(t.contains("Content-Length:")) {
+                    String num = t.substring(16);
+                    content_length = Integer.parseInt(num);
+                    break;
+                }
+            }
+
+            char[] cbuf = new char[content_length];
+
+            int bytes_read = 0;
+            int total_bytes_read = 0;
+
+            while(content_length > 0) {
+                bytes_read = br.read(cbuf, total_bytes_read, content_length);
+                content_length -= bytes_read;
+                total_bytes_read += bytes_read;
+            }
+
             br.close();
+
+            //System.out.println(cbuf);
+            System.out.println("Length of char buf: " + cbuf.length);
+            System.out.println("Bytes Read: " + total_bytes_read);
+            System.out.println("FINISHED WEB SCRAPE");
 
             // Raw HTML will be passed to another class to parse it
 
