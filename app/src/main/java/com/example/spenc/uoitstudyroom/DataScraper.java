@@ -22,6 +22,7 @@ class DataScraper {
             // Must connect over a secure socket layer (port 443)
             SSLSocketFactory ssf = (SSLSocketFactory) SSLSocketFactory.getDefault();
             this.socket = ssf.createSocket(InetAddress.getByName("rooms.library.dc-uoit.ca"), 443);
+            System.out.println("Opened socket!");
         } catch(IOException e) {
             e.printStackTrace();
         }
@@ -31,6 +32,7 @@ class DataScraper {
         if(socket != null && !socket.isClosed()) {
             try {
                 this.socket.close();
+                System.out.println("Closed socket.");
             } catch(IOException e) {
                 e.printStackTrace();
             }
@@ -41,7 +43,7 @@ class DataScraper {
         return this.socket != null && this.socket.isConnected();
     }
 
-    public char[] getRawHtml() {
+    char[] getRawHtml() {
         char[] cbuf = null;
 
         connect();
@@ -88,6 +90,7 @@ class DataScraper {
                 }
 
                 br.close();
+                disconnect();
 
             } catch(IOException e) {
                 e.printStackTrace();
@@ -174,6 +177,7 @@ class DataScraper {
                 }
 
                 br.close();
+                disconnect();
 
             } catch(IOException e) {
                 e.printStackTrace();
