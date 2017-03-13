@@ -5,6 +5,8 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -15,5 +17,7 @@ public class MainActivity extends AppCompatActivity {
 
         DataScraper dataScraper = new DataScraper();
         AsyncTask mScrapeBookingsTask = new ScrapeBookingsTask(MainActivity.this).execute(dataScraper);
+
+
     }
 }
