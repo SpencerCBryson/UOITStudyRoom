@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         DataScraper dataScraper = new DataScraper();
-        AsyncTask mScrapeBookingsTask = new ScrapeBookingsTask(MainActivity.this).execute(dataScraper);
+        AsyncTask mScrapeBookingsTask = new ScrapeBookingsTask(this).execute(dataScraper);
 
 
     }

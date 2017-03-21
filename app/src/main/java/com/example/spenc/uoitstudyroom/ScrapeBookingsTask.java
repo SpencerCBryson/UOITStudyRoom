@@ -3,7 +3,10 @@ package com.example.spenc.uoitstudyroom;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Scrapes raw HTML data from website, needing to be parsed
@@ -12,6 +15,8 @@ import java.util.ArrayList;
 class ScrapeBookingsTask extends AsyncTask<DataScraper, Void, Integer> {
 
     private ProgressDialog dialog;
+    ArrayList<Booking> bookingList = new ArrayList<>();
+    DataScraper dataScraper = new DataScraper();
 
     ScrapeBookingsTask(MainActivity activity) {
         dialog = new ProgressDialog(activity);
@@ -36,34 +41,81 @@ class ScrapeBookingsTask extends AsyncTask<DataScraper, Void, Integer> {
     protected Integer doInBackground(DataScraper... param) {
         DataScraper dataScraper = param[0];
         String[] formData = new String[4];
-        char[] cbuf;
 
         long startTime = System.currentTimeMillis();
 
         //TODO: Scrape with getRawHTML first
-        //char[] cbuf = dataScraper.getRawHTML();
+        char[] cbuf = dataScraper.getRawHtml();
 
         //TODO: Parse scraped data and retrieve required form data
 
         //TODO: Remove hardcoded driver code after parser is ready
         formData[0] = "ctl00$ContentPlaceHolder1$Calendar1";
-        formData[1] = "QI916RYBbfQD6nuE3P2gUrvDb1BDJVQtoegI6o9TQULjip291oACQAghC9JgAqkrAer78ueTRqk4Okz0QU77V557+IiU/xKFi73fvkLyGACRqDhgbxAAdBxfePQYalNCXAV3QweGJdAtRy1aLFkvqIAJmPEWC9HhWtziqyN8XgOZb6jvRHUQyjsvqsahMKGGWE9kcxuOThDTg1IaNlo7PYXwQd0TkifIrEg4L6/4iis01RMmAZKPFGO+MHE+LR6HfxSSSfVih0ygC2aBNQDAu5uasnLD3lj3Pl7X8NEg4mKOjo29/xcptjMoGRWlS0Hu7ZjS/KMjvKr9k/+OiWHNu25cez40rszFn4d2y6KPWGc/kwwHAt/egUzGv4DdLJNn6o/K2Iz3TPxmFHHuTBEujcSD1fC4LdrWpfHHJg+9n70ZRd86npeSPD1DY990zOSr/EZY0ZuQApmW3PqYlAVwxolybHrsMgmuTXEsO/B2u1/amSK5H641g8pHv2i80zf3djGrozbmp1ZLWm6M8MP32sJGCSmlTA5jBQdFZKputn1Fzlk0LHdUoKm7Ty1NYA7lTrXGc5sRe4nfAI7QAbDUmGiSX3mJnNuK0p038ahoOTQ4zCXCEGvN4tKndRmOXSTb3no+f2IyY5uFsKJL0WQQjC0NHurmpNvdMTFhd2vux201D7IvIHI8SYtRZztzwqKaSmiipdKZQTsOC903ErpPrNPIy3Mw/RHP0brwuzEJ3ZmjPlLMsxszbV65esBpwSS8DztH3aWkU52CG7aZSHtKN2XS9Mm7C3iF/W30ddEk3PzMC7gsWAQ+v6jClEz9yUMahcdkZJq1zgzuq2mKyEDkEzhBvSxUvHyJ7ggwWQneEXFa1LxuC2T1jiuunCYODBtdhZbg0yBjJAECSHEfx0AbdfhdJ2lfFXJPATS466uPeKIqtVOdrwRWisBl+lOHdRjKPPmW8XazcclO13ap44v+S1GOlxXsEBTxTVnzxA+XTTs1yOELlzOkOqiteY5mmy0tZ4CK2ACU/JMVrpIDbtxZ+CMEPjwqQln+mooX0NVrdAe6CHu+VxrnL/CKPy5n8Jr0xEpbmVEaPU1Cjx1ejeUme92eNzdzZ8MBMCPrxQ/AsH2VaFozPXYQb0P4WBSb9Kedp06Gl/HbwzhWiknrBlXZLL8TpqdoB11G9tERr7CUAullEBpdFdCrQBvEFZmL99un90w497c1s5lc0SVJJpSSfg==";
+        formData[1] = "Qy7rZS46beQUdQ2WhcURff79MxZ/IW+qpvpO5jmp4oWTCoLgsZRFIWzzEH8W+8T+vfBYrLkDPsKxFb/wxf3gDBXVIqzucr+y23qrhakK7KesSRMw1M6lf0etHU96Ov4tokE74U5wQ05LvWO5VmVHY3/wlzmZsEdRU06z1XTLYNK4BGg78hwi4HNml3puxAqYltzmwKp2NasjRZa3bgF9BNBkEej1JJg1Z1V3En1D27L8m5VeNuKdV62mTKnAJrABdPSgEjR8MGHAO0k/Q/1o+VR/f1HpFvgoJbOMxBJ8Gb6F0VUx11G+zAUs3KwiAiGb2cRIebBtzw7PfjXHnP3rDJ/DSogy36JbBEnnxGiEiV8JV0YZYbqryYHqtXEolrZSmsC4azRtYtFpZsVm/ea5X2W59Ddm4WJMzBrRU8gjYoUo6HzQuqmU80rwNSc2yVYVj1iZv21GfhexB5FIr82vmq1qA7GI0LgM/wDjiDKddwRn2gtJtVNBwN6bBSzD9wU4O/lyX4K7eOQNVBWSi7VKVbm39aCjTi7hpLdcLGr4qukQsnKcI0a26a9hgjD9Ee0FGqyis69uLAhWql08Zn503bSVHzYFv70uhJn5mJaQDJJDYxougEDMp+g1IbJXVNIe1p6iQWkTGJoF/tyRi4JYUYHvxavaYryTe+E5AU7GYEY6sQRYWBpg3+QXWnG5UrDiWIC9vl4QJSoSa3kO/+Z9U+awYwiVMFtQvgZVvBzSjD3UeRVxx6vaWTl8HXQ9SrA7vvmtP39W00aXPANOeUC9CxaCmQ9RRdUPV2QG8OTQoCmO/rlCQq8ehsW2L68HPLCyfJ7PwxfwwNpfDKow1qwnb5fFoOloLqKKN4MaXklDm3fEoUQbFRWXvUKujqZzpdS815JZ+4OoMnVdO4sO6vRgdJJ0mi7UG9fkeANJ343jv+T5Kg759rABliAz0DKNbOqNyODnY8KwPRMqFVzMJOL5t8ryx616twhEMTct70lG+Xd/hvq4Nrc1HYLx9WLuyDaS7Hr8aey73Uzscuabi9Q1GFWR7yiP0nMo5ypKcmq3idL9n3zqV1hcZy7mV+rQcomV+lGUvINQv7tuABArX8cnH/LYC5gct5AMvc5nkIa/1Xeh6pFn2opilNrHorped7yKMajRY45AmSgFB+kqGgJR/5meN94EnaOVniT21LSDl7TecfBKDB5o3FizLkMGuoxDxqSr2UVIE52w6cCQkEYt+A==";
         formData[2] = "80536060";
-        formData[3] = "Ptb1rYxaXnc9TOf07fS94ZNi36RioOLkPv4yPSbSlWAd+frDycynM1TTgeg/t7qTfG7qieF3+iiuJk9EBcrpTUDvcYAOQMvrIyWljNR+kZOz/AZ5SL2jysacl1DG3hR7yiLR2dVx4bQ94jhmKmJ8mUk7VBEoM7/RVxt22iMk0N6hgGnZyURlHrhDsineyzjsQxk14FmXMF1H6vNwenHuZFNdFbu1G+n9FrQs/ZyK8WmiIJWkNmcai6b9VtJ8KOEqgaZdm2U/61G7N7Ft8lncqXFj4CPyQ0EmRYXKCfYM2LlQTSGEOidAK8kdh/e8yPRQkpiHez/irAfS8s9ayR7FNapCozalAGNynoTe7v/i5mp4Mz1eyyr700BIRexByc/QoCgy2D9qaE4f772hgndOEnFx401T1T5ybqf1p3vzSJ4Zhi2iM1WJqtiniGD7c5e7QOUHRUF42HSQaFjkw2En3Hn4VkEVHNN6/BHmQEDNFcrrMyleoWNwQnY0TtyfIPUGQOZzPPwmBtuSt3xrfAVaBKAaJZqAj0m2a9bID88klQuKB/xJZolKu4XWKdDUk3cl9HPNXcHgIcUFz9kiUBgprh3NACRoE1avpEns2BRL9Qd1Q4KppVXbq+3Mcy2mr2hndjFh7rTK/Dj27jyeuROkHG4scJEF5bbaNezt+AWUVwG1kWwzl6/LQKRq0FZP1vkxjBOzX+ZruQL/mzDbc0JPXLZxgwi86/x+9jC8YWBxpfGRMzvh+xn9HjOUG3/JZWplaLeq1tTGn5M0VRCkc2+uMQi5q4pLf3W60+MNByahgiQuSg0o2hmqah8ucRQtCnpXtWzwGkvWzrxGXBPnQpWjYa/XUWx7SBB36yk67K9CLCFQg1wiklKj2TzggNb26rRFFrP5HxU0XKii6jwG4cTM7xK76uWZkDn+OeCyBiMBo/3IXmph5Zjw9bsuotFf6bCmujIsf9ua7lAPiyascmFHFuSBbC5a9C0NOmrUwb278p588xX4QaurTNDPIz+aIA2TtOL7j/jHhBBvv9GIF5W3WlGsN8RZkoJ3SerRhp5tcaX0YzG6ukbJuELTDHN4LrnrN/E94haYvDam9QWbg6CQ8tt6wY4gVcl1kaWrb2eMNcbmGuKrBhyvZpvadQInCDLqFow/lE3q6o7ePqdRo9pEzrchGcmzIB6C3QemFiFpk4gyGedvoGUXY2ooTe6oZWYYk1ongZJj7MDQiokk6qSGiDGH4rqOrW5FoxM2WSwQIqo/zilBrvplVfZObw18vT+HPbfcrxteR+HxKgydwgw05h1lsK40sFP2TxLn2WnS7W7JnJ6f/b4jzDrBiEJNoT0z4QGv6KB2EZtcQAQs/Dk6M01SiHLxo6vG4B28izY8PowGzf9JZkN6Pmhz7QaqLXfQscb3OaIfv2oRzWiCPdYWr20AZ2zkNFQQ4SmclTwWc/UXk68hPbKyWtW5ZkM8pGP9NzKMQbrdS6inHJFMQWHWoIv6CqdDFsyIUI2q4iPVdNlIj5kotE3RoT6Ya0sGLposzwn3Lzyb1pPBiQFuMHtDT0ykuwA9c/+1wPitI7LLg0wd/T1bh/Y4N5ZL1zExa0Kf1+F7DMgOnHNg0y2CAHFKgxMSWsKG6dWvHXvNpitJ9uK/x2Kcy2AhZh7U7wGAqQ3LunFu2Oyc/0gFGjmN+iElqS7NKtSX+tpV4+l2dxbpfS3Kxoj/AX+wBIff5rkrrcs56Mf1oCjZfezFYQCgdyguOC26f24T0sgnePkEtb2eBqk0ggxIdDb6sGSiRmAWVue1HhBIBkXU/FixAXhmmjbiBDEjds+oTV/qJM6DruRUvxmeNPBKfWCiPHqyJGn0v7PX2JiY74aQJrnsU36vzcjQsukgZldMGfxq6wiMhu3Gsys=";
+        formData[3] = "W+TINosvcLHyv0ZQcvzJLDSpJ2vOo2GgUinr+yWi8BLTO1bHov+3pWgjq0+g0gXk3HhMJm7XnxL/6OqcuHHcmrEkvM4Yerh0wizYlVd8mycapVcR0jSkAYX/XAvUg9jD2YGWXe//uyRPIkZs/VbEGSUOEe7gifhm1CjA2mdabk2Pcd7JcrKPM6zmlI453ZkwOIA7mMKqCT447TCBqFq5TBKCDfSZ2uLOg9t2168mMwZMoxRawydEXusTExH+OqNnniUOT4LfpFuKmNiK/87s6gR5JaNtfxqRm0pFckkvIUFCO025PcM+pFRDUs5Aj1l+D5OeSAjSp5kn6Hc/6H5HrThCPeyTTsWxo1H4ojrYgs6NT2VATpKVzCtmZUi/x36d5kF7UgbIYiWC8W3MIoJxLel+Qifj5w6gL/TWJhCSx7nmzIDx4TSmh8GIAQZEZz8nViqVfCmVr/e/0PuOg5Id+6f9JEQoApek/JL5aPqnDnzahZchP8Dg9uDSfcTuKzD6Tn4jI7jOiR8ixP8PoTjczGTTbCWH5S7shraXIvlXZDIoC5wvD17tpEpj/c+VV87zyRBYs1x5X0IUgEjBQuaJPSlkvYx6knRl0pMNb6LJehIjfVEaYkEZFoZgt3dST2l6LB7n634ssP8gmb2IX/vF/VDdKUd4OeKUXrzk6wGt0vS2IT4Hx9YJEwGTGzkIJyGe6EYjPt80F4UiYUmYf2HR2f9NBcYSC4zja5ghtZcaC0LqUFwr/2k9sodGwlnLA/2LTT0JwdmdpjRRBwKYyx7cHd+911C0Lx2EzF7s3yCFdXdADhJ7eQI5KD+4ZemqwFBV0MF1GI4bjgunjGFejGcwjQC+6mDvcC14MfBtqSBVcorOzlcf/vL/PgAcfMmNe7Lk+kfDnDbrUeNXaJbrJSStSaOQ27tOcUhVA1e0WSGFR42T93NnHuzvYyXlugVJlic6Y6sllp20vzVTU5ux3oN9/MDPg4/NX2qEz6e5uJPXjP9qhFHGq9o3wEvbJ/PCNb4U8KqPrbdMW7omJzXAsNKUHbJeqiXBCBlF9CpPhed/CwF72PtRzxwaSRdnUFLoutdqN/EfqgonraBZnskZCRzDPXrNrTZGvvjZGJG3U280W//tO6YDklyg6njuwy5q0klzChNJcZvYOmZhWR5r/bs0HuV9UkdeJIcsJEbPA10LXNYURK/s3mp0SqW3O5VVkPdLlyfnGqFIah+83rSL3I4PZWpHtPXqNEZcYsESlqJU23Z6eDQEBLp3aCoJzyKVkqNzP+pqu/blP9ZCCg8RGgLUYllcw4ozoA1tS5XBgaKsyqwo1XIS0+w9i/0NKZz4Ra2L2eFxjum4O6PCuH48GS2NZYTKLHiWKluccdJgBWEtdnhLTw0nqIMRa1c3Lutc1x0FGNR+izjCxKKG3ojzCF00zz/fFyFvOuOus9O0wW9dvLUPzZ9JehOjGjblBOKktplFtFu/10lck9gVaHqjDHkc5wucuX2kjEtOvN5/bAcH0/FijxGLJCiv9EQl+1r9BKfKCcWzrxffqBqj4ct1+W95Wmcb33y7k0d1V71U/cypMhLN51sqz8RG9v5xRthsGSKboED6i42K9RSwu82o5NeBMMsW2+n5dquFuuOEi7n1AWks0onvLF0kVkQSHFCZRsr5G2vcg4IYTWMk8+WF5CoVhCZK+BfeK5Qp8GkJwBTUFG+bZkKgM1KZbh1j9J4bnBMvM4DO6l8xzfRo/Q671OsMyHCGp5TE74yKMyDoIN+gkVYPEvArhiYw2y9TKzvOVKVTXYLxIQZUcCo3R3srQRO23von5w/zZ+9B7r1uA+XFxTg7GcZEyX6RSXzMNtJw79lNKUcV1SX2v3hunthOhuju/TFvP45TL/HEPnT60LjwroM=";
 
-        cbuf = dataScraper.postDate(6273,formData);
+        // Get dates
 
         Parser parser = new Parser(cbuf);
-        ArrayList<Element> elems = parser.getElements("meta");
-        for (Element elem : elems)
-            System.out.println(elem.getContent());
+        ArrayList<Element> elems = parser.select("table", "id", "ContentPlaceHolder1_Calendar1");
+        ArrayList<Element> aElems = parser.getElements(elems, "a", "href");
+        ArrayList<String> ids = new ArrayList<>();
 
-        //TODO: Build lists of bookings based on their room number
+        for (Element e : aElems) {
+            String link = e.getAttribute("href");
+            ids.add(e.getID(link));
+        }
+
+        // Get all postings by date
+        for (String id : ids) {
+            int idInt = Integer.parseInt(id);
+
+            cbuf = dataScraper.postDate(idInt, formData);
+            parser = new Parser(cbuf);
+            elems = parser.select("table", "id", "ContentPlaceHolder1_Table1");
+            ArrayList<Element> bookingElems = parser.getElements(elems, "a", "href");
+            System.out.println(bookingElems.size());
+
+            for (Element elem : bookingElems) {
+                Booking booking = parseBookingData(elem.getAttribute("href"));
+
+                bookingList.add(booking);
+            }
+        }
+
+//        for (Booking b : bookingList)
+//                System.out.println(b.getRoom() + " " + b.getDate());
+
+
+        dataScraper.postDate(6289,formData);
+        cbuf = dataScraper.selectBooking("LIB305","8:30%20PM");
+
+        //TODO: Scrape updated eventvalidation and viewstate for posting a certain booking
+
+        //TODO: Post booking with retrieved data
+
 
         long totalTime = System.currentTimeMillis() - startTime;
 
+        //System.out.println(new String(cbuf));
         System.out.println("Scraped bookings in " + totalTime + " ms.");
 
         return cbuf.length;
+    }
+
+    Booking parseBookingData(String data) {
+        String reg = "\\d{1,2}:..\\s[A|P]M";
+        String reg_ = "LIB[a-zA-Z0-9]*";
+        Pattern p = Pattern.compile(reg);
+        Matcher m = p.matcher(data);
+        Pattern p_ = Pattern.compile(reg_);
+        Matcher m_ = p_.matcher(data);
+
+        m.find();
+        m_.find();
+
+        Booking booking = new Booking(m.group(), m_.group());
+        return booking;
     }
 }

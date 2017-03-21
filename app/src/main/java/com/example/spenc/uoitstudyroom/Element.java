@@ -19,12 +19,26 @@ class Element {
         return name;
     }
 
+    String getAttribute(String attrib) {
+        return attribs.get(attrib);
+    }
+
     HashMap<String, String> getAttribs() {
         return attribs;
     }
 
     String getContent() {
         return content;
+    }
+
+    String getID(String s) {
+        String[] ids = s.split(",");
+
+        String[] id = ids[1].split("'");
+
+        String found = id[1];
+
+        return found;
     }
 
     void setContent(String content) {
@@ -35,8 +49,11 @@ class Element {
         this.name = name;
     }
 
+    Boolean contains(String attrib) {
+        return attribs.containsKey(attrib);
+    }
+
     void addAttributes(String element) {
-        System.out.println(element);
 
         String regex = "[A-Za-z]+=\"([^\"]*)\"";
         String nameRegex = "[^=]*";
@@ -54,13 +71,11 @@ class Element {
             m2.find();
 
             String attribName = m2.group();
-            System.out.println(attribName);
 
             m2 = pVal.matcher(attrib);
             m2.find();
 
             String attribVal = m2.group(1);
-            System.out.println(attribVal);
 
             attribs.put(attribName, attribVal);
         }

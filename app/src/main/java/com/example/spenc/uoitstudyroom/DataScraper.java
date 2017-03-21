@@ -16,6 +16,7 @@ import javax.net.ssl.SSLSocketFactory;
 class DataScraper {
 
     private Socket socket = null;
+    private String sessionID = null;
 
     private void connect() {
         try {
@@ -58,39 +59,7 @@ class DataScraper {
                 pw.print("User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64)\r\n\r\n");
                 pw.flush();
 
-                BufferedReader br = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-
-                String line;
-                int content_length = 0;
-                int max_iter = 15;
-
-                // Get length of content being received
-                for(int i = 0; i < max_iter; i++) {
-                    line = br.readLine();
-                    if (line.contains("Content-Length:")) {
-                        String num = line.substring(16);
-                        content_length = Integer.parseInt(num);
-                        break;
-                    }
-                }
-
-                // No data was received
-                if(content_length == 0)
-                    System.out.println("[ERROR] No suitable content found.");
-                //TODO: inform user of possible connection issue
-
-                cbuf = new char[content_length];
-
-                int total_bytes_read = 0;
-
-                while(content_length > 0) {
-                    int bytes_read = br.read(cbuf, total_bytes_read, content_length);
-                    content_length -= bytes_read;
-                    total_bytes_read += bytes_read;
-                }
-
-                br.close();
-                disconnect();
+                cbuf = receive();
 
             } catch(IOException e) {
                 e.printStackTrace();
@@ -99,8 +68,47 @@ class DataScraper {
             //TODO: Handle no connection
             System.out.println("[ERROR] No connection established!");
         }
+        return cbuf;
+    }
 
-        disconnect();
+    char[] receive() throws IOException {
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+
+        String line;
+        int content_length = 0;
+        int max_iter = 20;
+
+        // Retrieve header contents
+        System.out.println(br.readLine());
+        for(int i = 0; i < max_iter; i++) {
+            line = br.readLine();
+            if (line.contains("Set-Cookie: ASP.NET_SessionId")) { // scrape session ID cookie
+                this.sessionID = "ASP.NET_SessionId" + line.substring(29,54);
+                System.out.println(this.sessionID);
+            } else if (line.contains("Content-Length:")) {
+                String num = line.substring(16);
+                content_length = Integer.parseInt(num);
+                break;
+            }
+        }
+
+        // No data was received
+        if(content_length == 0)
+            System.out.println("[ERROR] No suitable content found.");
+        //TODO: inform user of possible connection issue
+
+        char[] cbuf = new char[content_length];
+
+        int total_bytes_read = 0;
+
+        while(content_length > 0) {
+            int bytes_read = br.read(cbuf, total_bytes_read, content_length);
+            content_length -= bytes_read;
+            total_bytes_read += bytes_read;
+        }
+
+        br.close();
 
         return cbuf;
     }
@@ -138,6 +146,7 @@ class DataScraper {
                 pw.print("POST /uoit_studyrooms/calendar.aspx HTTP/1.1\r\n");
                 pw.print("Host: rooms.library.dc-uoit.ca\r\n");
                 pw.print("User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64)\r\n");
+                pw.print("Origin: https://rooms.library.dc-uoit.ca\r\n");
                 pw.print("Content-Type: multipart/form-data; boundary=----BookingBoundary7MA4YWxkTrZu0gW\r\n");
                 pw.print("Content-Length: " + cLength + "\r\n\r\n");
 
@@ -145,40 +154,9 @@ class DataScraper {
 
                 pw.flush();
 
-                BufferedReader br = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+                cbuf = receive();
 
-                String line;
-                int content_length = 0;
-                int max_iter = 30;
-
-                // Get length of content being received
-                for(int i = 0; i < max_iter; i++) {
-                    line = br.readLine();
-                    if (line.contains("Content-Length:")) {
-                        String num = line.substring(16);
-                        content_length = Integer.parseInt(num);
-                        break;
-                    }
-                }
-
-                // No data was received
-                if(content_length == 0)
-                    System.out.println("[ERROR] No suitable content found.");
-                //TODO: inform user of possible connection issue
-
-                cbuf = new char[content_length];
-
-                int total_bytes_read = 0;
-
-                while(content_length > 0) {
-                    int bytes_read = br.read(cbuf, total_bytes_read, content_length);
-                    content_length -= bytes_read;
-                    total_bytes_read += bytes_read;
-                }
-
-                br.close();
                 disconnect();
-
             } catch(IOException e) {
                 e.printStackTrace();
             }
@@ -189,6 +167,51 @@ class DataScraper {
 
         return cbuf;
     }
+
+    char[] selectBooking(String room, String time) {
+        char[] cbuf = null;
+
+        connect();
+
+        if(probeSocket()) {
+            try {
+                // Send a request to temp.aspx in order to perform server sided booking selection for
+                // our session.
+                PrintWriter pw = new PrintWriter(this.socket.getOutputStream());
+                pw.print("GET /uoit_studyrooms/temp.aspx?starttime=8:30%20PM&room=LIB305&next=book.aspx HTTP/1.1\r\n");
+                pw.print("Host: rooms.library.dc-uoit.ca\r\n");
+                pw.print("Connection: keep-alive\r\n");
+                pw.print("Referer: https://rooms.library.dc-uoit.ca/uoit_studyrooms/calendar.aspx\r\n");
+                pw.print("Upgrade-Insecure-Requests: 1\r\n");
+                pw.print("Cookie: " + this.sessionID + "\r\n");
+                pw.print("User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64)\r\n\r\n");
+                pw.flush();
+
+                cbuf = receive();
+
+                // Send GET request to load the page for posting bookings
+                pw.print("GET /uoit_studyrooms/book.aspx HTTP/1.1\r\n");
+                pw.print("Host: rooms.library.dc-uoit.ca\r\n");
+                pw.print("Connection: keep-alive\r\n");
+                pw.print("Referer: https://rooms.library.dc-uoit.ca/uoit_studyrooms/calendar.aspx\r\n");
+                pw.print("Upgrade-Insecure-Requests: 1\r\n");
+                pw.print("Cookie: " + this.sessionID + "\r\n");
+                pw.print("User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64)\r\n\r\n");
+                pw.flush();
+
+                cbuf = receive();
+
+                disconnect();
+
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return cbuf;
+    }
+
+
 
 
 }
