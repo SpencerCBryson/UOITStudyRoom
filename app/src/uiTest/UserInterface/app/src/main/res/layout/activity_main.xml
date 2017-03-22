@@ -10,7 +10,7 @@
 
     <ListView
         android:id="@+id/listview_booking"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="400dp"
         android:divider="@color/colorPrimaryDark"
         android:dividerHeight="6dp"

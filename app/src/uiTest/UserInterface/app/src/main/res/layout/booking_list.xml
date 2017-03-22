@@ -1,37 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal"
+    android:paddingBottom="5dp"
     android:paddingLeft="8dp"
     android:paddingRight="8dp"
-    android:paddingBottom="5dp"
-    android:paddingTop="5dp">
+    android:paddingTop="5dp"
+    android:visibility="visible">
 
-    <TextView android:id="@+id/room"
-        android:text="Room Number"
-        android:textSize="22dp"
-        android:textColor="@color/colorPrimary"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-    <TextView android:id="@+id/time"
-        android:text="Time"
-        android:textSize="22dp"
-        android:textColor="@color/colorPrimary"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/room"
+            android:layout_width="125dp"
+            android:layout_height="wrap_content"
+            android:text="Room"
+            android:textColor="@color/colorPrimary"
+            android:textSize="21dp" />
 
-    <TextView android:id="@+id/capacity"
-        android:text="Capacity"
-        android:textColor="@color/colorPrimary"
-        android:textSize="16dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/capacity"
+            android:layout_width="125dp"
+            android:layout_height="wrap_content"
+            android:text="Capacity"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18dp" />
+    </LinearLayout>
 
-    <TextView android:id="@+id/avail"
-        android:text="Availiable"
-        android:textSize="22dp"
-        android:textColor="@color/colorGreen"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="10dp">
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Time"
+            android:textColor="@color/colorPrimary"
+            android:textSize="21dp" />
+
+        <TextView
+            android:id="@+id/avail"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Availiable"
+            android:textColor="@color/colorGreen"
+            android:textSize="18dp" />
+    </LinearLayout>
+    <!--
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btnCamera"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="Book Now" />
+    </LinearLayout>
+    -->
+
 </LinearLayout>

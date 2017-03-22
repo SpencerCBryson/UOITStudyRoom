@@ -48,7 +48,6 @@ class ScrapeBookingsTask extends AsyncTask<DataScraper, Void, Integer> {
         char[] cbuf = dataScraper.getRawHtml();
 
         //TODO: Parse scraped data and retrieve required form data
-
         //TODO: Remove hardcoded driver code after parser is ready
         formData[0] = "ctl00$ContentPlaceHolder1$Calendar1";
         formData[1] = "Qy7rZS46beQUdQ2WhcURff79MxZ/IW+qpvpO5jmp4oWTCoLgsZRFIWzzEH8W+8T+vfBYrLkDPsKxFb/wxf3gDBXVIqzucr+y23qrhakK7KesSRMw1M6lf0etHU96Ov4tokE74U5wQ05LvWO5VmVHY3/wlzmZsEdRU06z1XTLYNK4BGg78hwi4HNml3puxAqYltzmwKp2NasjRZa3bgF9BNBkEej1JJg1Z1V3En1D27L8m5VeNuKdV62mTKnAJrABdPSgEjR8MGHAO0k/Q/1o+VR/f1HpFvgoJbOMxBJ8Gb6F0VUx11G+zAUs3KwiAiGb2cRIebBtzw7PfjXHnP3rDJ/DSogy36JbBEnnxGiEiV8JV0YZYbqryYHqtXEolrZSmsC4azRtYtFpZsVm/ea5X2W59Ddm4WJMzBrRU8gjYoUo6HzQuqmU80rwNSc2yVYVj1iZv21GfhexB5FIr82vmq1qA7GI0LgM/wDjiDKddwRn2gtJtVNBwN6bBSzD9wU4O/lyX4K7eOQNVBWSi7VKVbm39aCjTi7hpLdcLGr4qukQsnKcI0a26a9hgjD9Ee0FGqyis69uLAhWql08Zn503bSVHzYFv70uhJn5mJaQDJJDYxougEDMp+g1IbJXVNIe1p6iQWkTGJoF/tyRi4JYUYHvxavaYryTe+E5AU7GYEY6sQRYWBpg3+QXWnG5UrDiWIC9vl4QJSoSa3kO/+Z9U+awYwiVMFtQvgZVvBzSjD3UeRVxx6vaWTl8HXQ9SrA7vvmtP39W00aXPANOeUC9CxaCmQ9RRdUPV2QG8OTQoCmO/rlCQq8ehsW2L68HPLCyfJ7PwxfwwNpfDKow1qwnb5fFoOloLqKKN4MaXklDm3fEoUQbFRWXvUKujqZzpdS815JZ+4OoMnVdO4sO6vRgdJJ0mi7UG9fkeANJ343jv+T5Kg759rABliAz0DKNbOqNyODnY8KwPRMqFVzMJOL5t8ryx616twhEMTct70lG+Xd/hvq4Nrc1HYLx9WLuyDaS7Hr8aey73Uzscuabi9Q1GFWR7yiP0nMo5ypKcmq3idL9n3zqV1hcZy7mV+rQcomV+lGUvINQv7tuABArX8cnH/LYC5gct5AMvc5nkIa/1Xeh6pFn2opilNrHorped7yKMajRY45AmSgFB+kqGgJR/5meN94EnaOVniT21LSDl7TecfBKDB5o3FizLkMGuoxDxqSr2UVIE52w6cCQkEYt+A==";
@@ -83,6 +82,7 @@ class ScrapeBookingsTask extends AsyncTask<DataScraper, Void, Integer> {
                 bookingList.add(booking);
             }
         }
+<<<<<<< HEAD
 
 //        for (Booking b : bookingList)
 //                System.out.println(b.getRoom() + " " + b.getDate());
@@ -95,6 +95,20 @@ class ScrapeBookingsTask extends AsyncTask<DataScraper, Void, Integer> {
 
         //TODO: Post booking with retrieved data
 
+=======
+
+//        for (Booking b : bookingList)
+//                System.out.println(b.getRoom() + " " + b.getDate());
+
+
+        dataScraper.postDate(6289,formData);
+
+        //TODO: Scrape updated eventvalidation and viewstate for posting a certain booking
+        cbuf = dataScraper.selectBooking("LIB305","8:30 PM",0);
+
+        //TODO: Post booking with retrieved data
+        dataScraper.postBooking(formData);
+>>>>>>> 0f5626b5afa2531503ec353f1d3cd91b2981c2c4
 
         long totalTime = System.currentTimeMillis() - startTime;
 

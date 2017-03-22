@@ -21,8 +21,8 @@ public class Booking {
     public Booking(int id, String date, String room, String capacity, String avail, String time, String link) {
         this.id = id;
         this.date = date;
-        this.room = "Room: " + room;
-        this.capacity = "Capacity: " + capacity;
+        this.room = room;
+        this.capacity = capacity;
         this.avail = avail;
         this.time = time;
         this.link = link;

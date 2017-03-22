@@ -13,6 +13,8 @@ import javax.net.ssl.SSLSocketFactory;
  * Scrapes various sorts of needed data from UOIT's library website
  */
 
+//TODO: Open and close sockets more less often to reduce overhead
+
 class DataScraper {
 
     private Socket socket = null;
@@ -23,7 +25,7 @@ class DataScraper {
             // Must connect over a secure socket layer (port 443)
             SSLSocketFactory ssf = (SSLSocketFactory) SSLSocketFactory.getDefault();
             this.socket = ssf.createSocket(InetAddress.getByName("rooms.library.dc-uoit.ca"), 443);
-            System.out.println("Opened socket!");
+            //System.out.println("Opened socket!");
         } catch(IOException e) {
             e.printStackTrace();
         }
@@ -33,7 +35,7 @@ class DataScraper {
         if(socket != null && !socket.isClosed()) {
             try {
                 this.socket.close();
-                System.out.println("Closed socket.");
+                //System.out.println("Closed socket.");
             } catch(IOException e) {
                 e.printStackTrace();
             }
@@ -70,6 +72,7 @@ class DataScraper {
         }
         return cbuf;
     }
+<<<<<<< HEAD
 
     char[] receive() throws IOException {
 
@@ -108,6 +111,46 @@ class DataScraper {
             total_bytes_read += bytes_read;
         }
 
+=======
+
+    private char[] receive() throws IOException {
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+
+        String line;
+        int content_length = 0;
+        int max_iter = 20;
+
+        // Retrieve header contents
+        System.out.println(br.readLine());
+        for(int i = 0; i < max_iter; i++) {
+            line = br.readLine();
+            if (line.contains("Set-Cookie: ASP.NET_SessionId")) { // scrape session ID cookie
+                this.sessionID = "ASP.NET_SessionId" + line.substring(29,54);
+                //System.out.println(this.sessionID);
+            } else if (line.contains("Content-Length:")) {
+                String num = line.substring(16);
+                content_length = Integer.parseInt(num);
+                break;
+            }
+        }
+
+        // No data was received
+        if(content_length == 0)
+            System.out.println("[ERROR] No suitable content found.");
+        //TODO: inform user of possible connection issue
+
+        char[] cbuf = new char[content_length];
+
+        int total_bytes_read = 0;
+
+        while(content_length > 0) {
+            int bytes_read = br.read(cbuf, total_bytes_read, content_length);
+            content_length -= bytes_read;
+            total_bytes_read += bytes_read;
+        }
+
+>>>>>>> 0f5626b5afa2531503ec353f1d3cd91b2981c2c4
         br.close();
 
         return cbuf;
@@ -155,6 +198,7 @@ class DataScraper {
                 pw.flush();
 
                 cbuf = receive();
+<<<<<<< HEAD
 
                 disconnect();
             } catch(IOException e) {
@@ -199,6 +243,57 @@ class DataScraper {
                 pw.print("User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64)\r\n\r\n");
                 pw.flush();
 
+=======
+
+                disconnect();
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            //TODO: Handle no connection
+            System.out.println("[ERROR] No connection established!");
+        }
+
+        return cbuf;
+    }
+
+    char[] selectBooking(String room, String time, int bookingState) {
+        char[] cbuf = null;
+        String next;
+
+        connect();
+
+        if(bookingState == 0) // open booking
+            next = "book.aspx";
+        else if(bookingState == 1) // partial booking
+            next = "joinorleave.aspx";
+        else // complete booking
+            next = "viewleaveorjoin.aspx";
+
+        if(probeSocket()) {
+            try {
+                // Send a request to temp.aspx in order to perform server sided booking selection for
+                // our session.
+                PrintWriter pw = new PrintWriter(this.socket.getOutputStream());
+                pw.print("GET /uoit_studyrooms/temp.aspx?starttime=" + time.replace(" ","%20") + "&room=" + room + "&next=" + next + " HTTP/1.1\r\n");
+                pw.print("Host: rooms.library.dc-uoit.ca\r\n");
+                pw.print("Connection: keep-alive\r\n");
+                pw.print("Referer: https://rooms.library.dc-uoit.ca/uoit_studyrooms/calendar.aspx\r\n");
+                pw.print("Cookie: " + this.sessionID + "\r\n");
+                pw.print("User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64)\r\n\r\n");
+                pw.flush();
+
+                cbuf = receive();
+
+                pw.print("GET /uoit_studyrooms/" + next + " HTTP/1.1\r\n");
+                pw.print("Host: rooms.library.dc-uoit.ca\r\n");
+                pw.print("Connection: keep-alive\r\n");
+                pw.print("Referer: https://rooms.library.dc-uoit.ca/uoit_studyrooms/calendar.aspx\r\n");
+                pw.print("Cookie: " + this.sessionID + "\r\n");
+                pw.print("User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64)\r\n\r\n");
+                pw.flush();
+
+>>>>>>> 0f5626b5afa2531503ec353f1d3cd91b2981c2c4
                 cbuf = receive();
 
                 disconnect();
@@ -210,6 +305,26 @@ class DataScraper {
 
         return cbuf;
     }
+
+    char[] postBooking(String[] formData) {
+        char[] cbuf = null;
+
+        connect();
+
+        try {
+            PrintWriter pw = new PrintWriter(this.socket.getOutputStream());
+            //TODO: Build form data header to create a new booking
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        disconnect();
+
+        return cbuf;
+    }
+
+
 
 
 
