@@ -10,10 +10,11 @@ SSL sockets are used to send HTTP headers to the webserver to fetch the raw HTML
 - POSTs the required ASP.NET form-data in order to display the bookings for the available dates.
 - Retrieves sessionID cookie in order to maintain a session.
 - GETs Book.aspx to gather required data to create a booking.
+- POSTs Book.aspx with given data in order to create a booking.
 
 ### Future
-- POSTs Book.aspx with given data in order to create a booking.
-- POSTs user login information to web server in order to create, join and manage bookings.
+- Handle joining a booking
+- Handle managing bookings
 - Scrapes viewjoinorleave.aspx to retrieve specific booking information, such as the groups who have signed up.
 
 ## Parser
