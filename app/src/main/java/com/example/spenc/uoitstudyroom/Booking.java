@@ -10,15 +10,15 @@ public class Booking {
     String date;
     String room;
     String link;
+    int bookingState;
 
-    Booking(String date, String room) {
+    Booking(String date, String room, int bookingState) {
         this.date = date;
         this.room = room;
+        this.bookingState = bookingState;
     }
 
-    public String getDate() {
-        return date;
-    }
+    public String getDate() { return date; }
 
     public String getRoom() {
         return room;
@@ -27,4 +27,6 @@ public class Booking {
     public String getLink() {
         return link;
     }
+
+    public int getBookingState() {return bookingState; }
 }

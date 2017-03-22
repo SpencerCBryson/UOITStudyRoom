@@ -131,7 +131,7 @@ class Parser {
         int end = 0;
         int depth = 0;
 
-        System.out.println("Starting");
+//        System.out.println("Starting");
 
         for (int  i = 0; i < html.length(); i++) {
             Element element = new Element("");
@@ -145,7 +145,7 @@ class Parser {
                         beginning = false;
                     }
 
-                    if (html.charAt(j) == '>' || (html.substring(j, j + 1)) == "/>") {
+                    if (html.charAt(j) == '>' || (html.substring(j, j + 1)).equals("/>")) {
                         element.addAttributes(html.substring(start, j));
                         break;
                     }
@@ -155,7 +155,7 @@ class Parser {
             elements.add(element);
         }
 
-        System.out.println("Done");
+//        System.out.println("Done");
         return elements;
     }
 
@@ -197,7 +197,19 @@ class Parser {
             }
         }
 
+        Boolean tagEnded = false;
+
         for (int i = start + 1; i < html.length() - elementNameLength; i++) {
+            if (!tagEnded && html.charAt(i) == '>')
+                tagEnded = true;
+
+            if (!tagEnded) {
+                if (html.substring(i, i + 2).equals("/>")) {
+                    end = i + 2;
+                    break;
+                }
+            }
+
             if (html.substring(i, i + elementNameLength).equals(elementName))
                 depth += 1;
 

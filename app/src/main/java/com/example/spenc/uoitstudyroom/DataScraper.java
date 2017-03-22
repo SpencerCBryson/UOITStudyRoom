@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.HashMap;
 
 import javax.net.ssl.SSLSocketFactory;
 
@@ -306,20 +307,55 @@ class DataScraper {
         return cbuf;
     }
 
-    char[] postBooking(String[] formData) {
+    char[] postBooking(HashMap<String,String> postData) {
         char[] cbuf = null;
+        String boundary = "----BookingBoundary7MA4YWxkTrZu0gW";
+        String cr = "\r\n";
+        String cd = "Content-Disposition: form-data; ";
+
+        String payload =
+                "--" + boundary + cr + cd + "name=\"__EVENTVALIDATION\"\r\n\r\n" + postData.get("evalid") + cr +
+                        "--" + boundary + cr + cd + "name=\"__VIEWSTATE\"\r\n\r\n" + postData.get("vstate") + cr +
+                        "--" + boundary + cr + cd + "name=\"__VIEWSTATEGENERATOR\"\r\n\r\n" + postData.get("vstategen") + cr +
+                        "--" + boundary + cr + cd + "name=\"ctl00$ContentPlaceHolder1$ButtonReserve\"\r\n\r\n" + postData.get("btnreserve") + cr +
+                        "--" + boundary + cr + cd + "name=\"ctl00$ContentPlaceHolder1$RadioButtonListDuration\"\r\n\r\n" + postData.get("duration") + cr +
+                        "--" + boundary + cr + cd + "name=\"ctl00$ContentPlaceHolder1$RadioButtonListInstitutions\"\r\n\r\n" + postData.get("institution") + cr +
+                        "--" + boundary + cr + cd + "name=\"ctl00$ContentPlaceHolder1$TextBoxGroupCode\"\r\n\r\n" + postData.get("groupcode") + cr +
+                        "--" + boundary + cr + cd + "name=\"ctl00$ContentPlaceHolder1$TextBoxName\"\r\n\r\n" + postData.get("groupname") + cr +
+                        "--" + boundary + cr + cd + "name=\"ctl00$ContentPlaceHolder1$TextBoxNotes\"\r\n\r\n" + postData.get("notes") + cr +
+                        "--" + boundary + cr + cd + "name=\"ctl00$ContentPlaceHolder1$TextBoxPassword\"\r\n\r\n" + postData.get("password") + cr +
+                        "--" + boundary + cr + cd + "name=\"ctl00$ContentPlaceHolder1$TextBoxStudentID\"\r\n\r\n" + postData.get("studentid") + cr +
+                        "--" + boundary + "--";
+
+        int cLength = payload.length();
 
         connect();
 
-        try {
-            PrintWriter pw = new PrintWriter(this.socket.getOutputStream());
-            //TODO: Build form data header to create a new booking
+        if(probeSocket()) {
+            try {
+                // Send a GET header to the HTTP server to receive HTML data of the page we want
+                PrintWriter pw = new PrintWriter(this.socket.getOutputStream());
+                pw.print("POST /uoit_studyrooms/book.aspx HTTP/1.1\r\n");
+                pw.print("Host: rooms.library.dc-uoit.ca\r\n");
+                pw.print("User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64)\r\n");
+                pw.print("Origin: https://rooms.library.dc-uoit.ca\r\n");
+                pw.print("Referer: https://rooms.library.dc-uoit.ca/uoit_studyrooms/book.aspx\r\n");
+                pw.print("Cookie: " + this.sessionID + "\r\n");
+                pw.print("Content-Type: multipart/form-data; boundary=----BookingBoundary7MA4YWxkTrZu0gW\r\n");
+                pw.print("Content-Length: " + cLength + "\r\n\r\n");
 
-        } catch (IOException e) {
-            e.printStackTrace();
+                pw.print(payload);
+
+                pw.flush();
+
+                cbuf = receive();
+
+                disconnect();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-
-        disconnect();
 
         return cbuf;
     }
