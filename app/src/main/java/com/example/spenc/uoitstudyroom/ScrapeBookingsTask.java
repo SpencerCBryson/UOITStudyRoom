@@ -5,6 +5,8 @@ import android.os.AsyncTask;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -80,13 +82,35 @@ class ScrapeBookingsTask extends AsyncTask<DataScraper, Void, Integer> {
             }
         }
 
-//        dataScraper.postDate(6289,formData);
-//
+
 //        //TODO: Scrape updated eventvalidation and viewstate for posting a certain booking
-//        cbuf = dataScraper.selectBooking("LIB305","8:30 PM",0);
+        cbuf = dataScraper.selectBooking("LIB305","8:30 PM",0);
 //
 //        //TODO: Post booking with retrieved data
-//        dataScraper.postBooking(formData);
+
+        parser = new Parser(cbuf);
+
+        HashMap<String,String> postData = new HashMap<String,String>();
+
+        postData.put("vstate", parser.select("input", "name", "__VIEWSTATE").get(0).getAttribute("value"));
+        postData.put("vstategen", parser.select("input", "name", "__VIEWSTATEGENERATOR").get(0).getAttribute("value"));
+        postData.put("evalid", parser.select("input", "name", "__EVENTVALIDATION").get(0).getAttribute("value"));
+
+        //TODO: GET VALUES FROM UI INSTEAD OF HARDCODING
+
+        postData.put("btnreserve","Create group");
+        postData.put("duration","0.5");
+        postData.put("institution","uoit");
+        postData.put("groupcode","test");
+        postData.put("groupname","test");
+        postData.put("notes","test"); //OPTIONAL, however it still need to send it as empty
+        postData.put("password","nothankyou");
+        postData.put("studentid","999999999");
+
+        //incorrect student id and password error is expected
+        cbuf = dataScraper.postBooking(postData);
+
+
 
         long totalTime = System.currentTimeMillis() - startTime;
 
