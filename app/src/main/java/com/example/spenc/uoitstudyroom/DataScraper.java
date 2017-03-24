@@ -83,7 +83,7 @@ class DataScraper {
         int max_iter = 20;
 
         // Retrieve header contents
-        System.out.println(br.readLine());
+       // System.out.println(br.readLine());
         for(int i = 0; i < max_iter; i++) {
             line = br.readLine();
             if (line.contains("Set-Cookie: ASP.NET_SessionId")) { // scrape session ID cookie
@@ -296,8 +296,8 @@ class DataScraper {
     }
 
     char[] selectPartialBooking(HashMap<String,String> postData, String[] bookingData) {
-        char[] cbuf = null;
-        String btnPlaceHolder = null, radioPlaceHolder = null;
+        char[] cbuf;
+        String btnPlaceHolder, radioPlaceHolder;
         String boundary = "----BookingBoundary7MA4YWxkTrZu0gW";
         String cr = "\r\n";
         String cd = "Content-Disposition: form-data; ";
@@ -318,7 +318,7 @@ class DataScraper {
                         "--" + boundary + cr + cd + radioPlaceHolder + postData.get("radio") + cr +
                         "--" + boundary + "--";
         try {
-            cbuf = sendPayload(payload, 1);
+            sendPayload(payload, 1);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -353,7 +353,7 @@ class DataScraper {
 
     char[] existingBooking(HashMap<String,String> postData) {
         char[] cbuf = null;
-        String btnPlaceHolder = null;
+        String btnPlaceHolder;
         String boundary = "----BookingBoundary7MA4YWxkTrZu0gW";
         String cr = "\r\n";
         String cd = "Content-Disposition: form-data; ";
