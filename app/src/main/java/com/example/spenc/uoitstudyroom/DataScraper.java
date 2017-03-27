@@ -73,46 +73,6 @@ class DataScraper {
         }
         return cbuf;
     }
-<<<<<<< HEAD
-
-    char[] receive() throws IOException {
-
-        BufferedReader br = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-
-        String line;
-        int content_length = 0;
-        int max_iter = 20;
-
-        // Retrieve header contents
-        System.out.println(br.readLine());
-        for(int i = 0; i < max_iter; i++) {
-            line = br.readLine();
-            if (line.contains("Set-Cookie: ASP.NET_SessionId")) { // scrape session ID cookie
-                this.sessionID = "ASP.NET_SessionId" + line.substring(29,54);
-                System.out.println(this.sessionID);
-            } else if (line.contains("Content-Length:")) {
-                String num = line.substring(16);
-                content_length = Integer.parseInt(num);
-                break;
-            }
-        }
-
-        // No data was received
-        if(content_length == 0)
-            System.out.println("[ERROR] No suitable content found.");
-        //TODO: inform user of possible connection issue
-
-        char[] cbuf = new char[content_length];
-
-        int total_bytes_read = 0;
-
-        while(content_length > 0) {
-            int bytes_read = br.read(cbuf, total_bytes_read, content_length);
-            content_length -= bytes_read;
-            total_bytes_read += bytes_read;
-        }
-
-=======
 
     private char[] receive() throws IOException {
 
@@ -123,7 +83,7 @@ class DataScraper {
         int max_iter = 20;
 
         // Retrieve header contents
-        System.out.println(br.readLine());
+       // System.out.println(br.readLine());
         for(int i = 0; i < max_iter; i++) {
             line = br.readLine();
             if (line.contains("Set-Cookie: ASP.NET_SessionId")) { // scrape session ID cookie
@@ -151,8 +111,48 @@ class DataScraper {
             total_bytes_read += bytes_read;
         }
 
->>>>>>> 0f5626b5afa2531503ec353f1d3cd91b2981c2c4
         br.close();
+
+        return cbuf;
+    }
+
+    private char[] sendPayload(String payload, int bookingState) throws IOException {
+        char[] cbuf = null;
+        String next;
+        int cLength = payload.length();
+
+        if(bookingState == 0) // open booking
+            next = "book.aspx";
+        else if(bookingState == 1) // partial booking
+            next = "joinorleave.aspx";
+        else if(bookingState == 2) // complete booking
+            next = "viewleaveorjoin.aspx";
+        else
+            next = "joingroup.aspx";
+
+
+        connect();
+
+        if(probeSocket()) {
+            // Send a GET header to the HTTP server to receive HTML data of the page we want
+            PrintWriter pw = new PrintWriter(this.socket.getOutputStream());
+            pw.print("POST /uoit_studyrooms/" + next + " HTTP/1.1\r\n");
+            pw.print("Host: rooms.library.dc-uoit.ca\r\n");
+            pw.print("User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64)\r\n");
+            pw.print("Origin: https://rooms.library.dc-uoit.ca\r\n");
+            pw.print("Referer: https://rooms.library.dc-uoit.ca/uoit_studyrooms/" + next + "\r\n");
+            pw.print("Cookie: " + this.sessionID + "\r\n");
+            pw.print("Content-Type: multipart/form-data; boundary=----BookingBoundary7MA4YWxkTrZu0gW\r\n");
+            pw.print("Content-Length: " + cLength + "\r\n\r\n");
+
+            pw.print(payload);
+
+            pw.flush();
+
+            cbuf = receive();
+
+            disconnect();
+        }
 
         return cbuf;
     }
@@ -199,52 +199,6 @@ class DataScraper {
                 pw.flush();
 
                 cbuf = receive();
-<<<<<<< HEAD
-
-                disconnect();
-            } catch(IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            //TODO: Handle no connection
-            System.out.println("[ERROR] No connection established!");
-        }
-
-        return cbuf;
-    }
-
-    char[] selectBooking(String room, String time) {
-        char[] cbuf = null;
-
-        connect();
-
-        if(probeSocket()) {
-            try {
-                // Send a request to temp.aspx in order to perform server sided booking selection for
-                // our session.
-                PrintWriter pw = new PrintWriter(this.socket.getOutputStream());
-                pw.print("GET /uoit_studyrooms/temp.aspx?starttime=8:30%20PM&room=LIB305&next=book.aspx HTTP/1.1\r\n");
-                pw.print("Host: rooms.library.dc-uoit.ca\r\n");
-                pw.print("Connection: keep-alive\r\n");
-                pw.print("Referer: https://rooms.library.dc-uoit.ca/uoit_studyrooms/calendar.aspx\r\n");
-                pw.print("Upgrade-Insecure-Requests: 1\r\n");
-                pw.print("Cookie: " + this.sessionID + "\r\n");
-                pw.print("User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64)\r\n\r\n");
-                pw.flush();
-
-                cbuf = receive();
-
-                // Send GET request to load the page for posting bookings
-                pw.print("GET /uoit_studyrooms/book.aspx HTTP/1.1\r\n");
-                pw.print("Host: rooms.library.dc-uoit.ca\r\n");
-                pw.print("Connection: keep-alive\r\n");
-                pw.print("Referer: https://rooms.library.dc-uoit.ca/uoit_studyrooms/calendar.aspx\r\n");
-                pw.print("Upgrade-Insecure-Requests: 1\r\n");
-                pw.print("Cookie: " + this.sessionID + "\r\n");
-                pw.print("User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64)\r\n\r\n");
-                pw.flush();
-
-=======
 
                 disconnect();
             } catch(IOException e) {
@@ -264,12 +218,18 @@ class DataScraper {
 
         connect();
 
+        String referer = "Referer: https://rooms.library.dc-uoit.ca/uoit_studyrooms/calendar.aspx\r\n";
+
         if(bookingState == 0) // open booking
             next = "book.aspx";
         else if(bookingState == 1) // partial booking
             next = "joinorleave.aspx";
-        else // complete booking
+        else if(bookingState == 2) // complete booking
             next = "viewleaveorjoin.aspx";
+        else {
+            next = "joingroup.aspx";
+            referer = "Referer: https://rooms.library.dc-uoit.ca/uoit_studyrooms/joinorleave.aspx\r\n";
+        }
 
         if(probeSocket()) {
             try {
@@ -279,7 +239,7 @@ class DataScraper {
                 pw.print("GET /uoit_studyrooms/temp.aspx?starttime=" + time.replace(" ","%20") + "&room=" + room + "&next=" + next + " HTTP/1.1\r\n");
                 pw.print("Host: rooms.library.dc-uoit.ca\r\n");
                 pw.print("Connection: keep-alive\r\n");
-                pw.print("Referer: https://rooms.library.dc-uoit.ca/uoit_studyrooms/calendar.aspx\r\n");
+                pw.print(referer);
                 pw.print("Cookie: " + this.sessionID + "\r\n");
                 pw.print("User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64)\r\n\r\n");
                 pw.flush();
@@ -289,12 +249,11 @@ class DataScraper {
                 pw.print("GET /uoit_studyrooms/" + next + " HTTP/1.1\r\n");
                 pw.print("Host: rooms.library.dc-uoit.ca\r\n");
                 pw.print("Connection: keep-alive\r\n");
-                pw.print("Referer: https://rooms.library.dc-uoit.ca/uoit_studyrooms/calendar.aspx\r\n");
+                pw.print(referer);
                 pw.print("Cookie: " + this.sessionID + "\r\n");
                 pw.print("User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64)\r\n\r\n");
                 pw.flush();
 
->>>>>>> 0f5626b5afa2531503ec353f1d3cd91b2981c2c4
                 cbuf = receive();
 
                 disconnect();
@@ -327,42 +286,100 @@ class DataScraper {
                         "--" + boundary + cr + cd + "name=\"ctl00$ContentPlaceHolder1$TextBoxStudentID\"\r\n\r\n" + postData.get("studentid") + cr +
                         "--" + boundary + "--";
 
-        int cLength = payload.length();
-
-        connect();
-
-        if(probeSocket()) {
-            try {
-                // Send a GET header to the HTTP server to receive HTML data of the page we want
-                PrintWriter pw = new PrintWriter(this.socket.getOutputStream());
-                pw.print("POST /uoit_studyrooms/book.aspx HTTP/1.1\r\n");
-                pw.print("Host: rooms.library.dc-uoit.ca\r\n");
-                pw.print("User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64)\r\n");
-                pw.print("Origin: https://rooms.library.dc-uoit.ca\r\n");
-                pw.print("Referer: https://rooms.library.dc-uoit.ca/uoit_studyrooms/book.aspx\r\n");
-                pw.print("Cookie: " + this.sessionID + "\r\n");
-                pw.print("Content-Type: multipart/form-data; boundary=----BookingBoundary7MA4YWxkTrZu0gW\r\n");
-                pw.print("Content-Length: " + cLength + "\r\n\r\n");
-
-                pw.print(payload);
-
-                pw.flush();
-
-                cbuf = receive();
-
-                disconnect();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            cbuf = sendPayload(payload, 0);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return cbuf;
     }
 
+    char[] selectPartialBooking(HashMap<String,String> postData, String[] bookingData) {
+        char[] cbuf;
+        String btnPlaceHolder, radioPlaceHolder;
+        String boundary = "----BookingBoundary7MA4YWxkTrZu0gW";
+        String cr = "\r\n";
+        String cd = "Content-Disposition: form-data; ";
+
+        if(postData.get("btn").equals("Create or Join a Group")) {
+            btnPlaceHolder = "name=\"ctl00$ContentPlaceHolder1$ButtonJoinOrCreate\"\r\n\r\n";
+            radioPlaceHolder = "name=\"ctl00$ContentPlaceHolder1$RadioButtonListJoinOrCreateGroup\"\r\n\r\n";
+        } else {
+            btnPlaceHolder = "name=\"ctl00$ContentPlaceHolder1$ButtonLeave\"\r\n\r\n";
+            radioPlaceHolder = "name=\"ctl00$ContentPlaceHolder1$RadiobuttonListLeaveGroup\"\r\n\r\n";
+        }
+
+        String payload =
+                "--" + boundary + cr + cd + "name=\"__EVENTVALIDATION\"\r\n\r\n" + postData.get("evalid") + cr +
+                        "--" + boundary + cr + cd + "name=\"__VIEWSTATE\"\r\n\r\n" + postData.get("vstate") + cr +
+                        "--" + boundary + cr + cd + "name=\"__VIEWSTATEGENERATOR\"\r\n\r\n" + postData.get("vstategen") + cr +
+                        "--" + boundary + cr + cd + btnPlaceHolder + postData.get("btn") + cr +
+                        "--" + boundary + cr + cd + radioPlaceHolder + postData.get("radio") + cr +
+                        "--" + boundary + "--";
+        try {
+            sendPayload(payload, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        cbuf = selectBooking(bookingData[0],bookingData[1],3);
+
+        return cbuf;
+    }
+
+    char[] joinPartialBooking(HashMap<String,String> postData) {
+        char[] cbuf = null;
+        String boundary = "----BookingBoundary7MA4YWxkTrZu0gW";
+        String cr = "\r\n";
+        String cd = "Content-Disposition: form-data; ";
+
+        String payload =
+                "--" + boundary + cr + cd + "name=\"__EVENTVALIDATION\"\r\n\r\n" + postData.get("evalid") + cr +
+                        "--" + boundary + cr + cd + "name=\"__VIEWSTATE\"\r\n\r\n" + postData.get("vstate") + cr +
+                        "--" + boundary + cr + cd + "name=\"__VIEWSTATEGENERATOR\"\r\n\r\n" + postData.get("vstategen") + cr +
+                        "--" + boundary + cr + cd + "name=\"ctl00$ContentPlaceHolder1$TextBoxPassword\"\r\n\r\n" + postData.get("password") + cr +
+                        "--" + boundary + cr + cd + "name=\"ctl00$ContentPlaceHolder1$TextBoxID\"\r\n\r\n" + postData.get("studentid") + cr +
+                        "--" + boundary + cr + cd + "name=\"ctl00$ContentPlaceHolder1$ButtonJoin\"\r\n\r\n" + postData.get("btn") + cr +
+                        "--" + boundary + "--";
+        try {
+            cbuf = sendPayload(payload, 3);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return cbuf;
+    }
+
+    char[] existingBooking(HashMap<String,String> postData) {
+        char[] cbuf = null;
+        String btnPlaceHolder;
+        String boundary = "----BookingBoundary7MA4YWxkTrZu0gW";
+        String cr = "\r\n";
+        String cd = "Content-Disposition: form-data; ";
+
+        if(postData.get("btn").equals("Join"))
+            btnPlaceHolder = "name=\"ctl00$ContentPlaceHolder1$ButtonJoinGroup\"\r\n\r\n";
+        else
+            btnPlaceHolder = "name=\"ctl00$ContentPlaceHolder1$ButtonLeaveGroup\"\r\n\r\n";
+
+        String payload =
+                "--" + boundary + cr + cd + "name=\"__EVENTVALIDATION\"\r\n\r\n" + postData.get("evalid") + cr +
+                        "--" + boundary + cr + cd + "name=\"__VIEWSTATE\"\r\n\r\n" + postData.get("vstate") + cr +
+                        "--" + boundary + cr + cd + "name=\"__VIEWSTATEGENERATOR\"\r\n\r\n" + postData.get("vstategen") + cr +
+                        "--" + boundary + cr + cd + btnPlaceHolder + postData.get("btn") + cr +
+                        "--" + boundary + cr + cd + "name=\"ctl00$ContentPlaceHolder1$TextBoxPassword\"\r\n\r\n" + postData.get("password") + cr +
+                        "--" + boundary + cr + cd + "name=\"ctl00$ContentPlaceHolder1$TextBoxStudentID\"\r\n\r\n" + postData.get("studentid") + cr +
+                        "--" + boundary + "--";
+        try {
+            cbuf = sendPayload(payload, 2);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return cbuf;
 
 
-
-
+    }
 
 }

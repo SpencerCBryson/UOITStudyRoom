@@ -98,7 +98,7 @@ class ScrapeBookingsTask extends AsyncTask<DataScraper, Void, Integer> {
 
 
 //        //TODO: Scrape updated eventvalidation and viewstate for posting a certain booking
-        cbuf = dataScraper.selectBooking("LIB305","8:30 PM",0);
+        cbuf = dataScraper.selectBooking("LIB304","8:30 PM",1);
 //
 //        //TODO: Post booking with retrieved data
 
@@ -106,31 +106,64 @@ class ScrapeBookingsTask extends AsyncTask<DataScraper, Void, Integer> {
 
         HashMap<String,String> postData = new HashMap<String,String>();
 
+//        postData.put("vstate", parser.select("input", "name", "__VIEWSTATE").get(0).getAttribute("value"));
+//        postData.put("vstategen", parser.select("input", "name", "__VIEWSTATEGENERATOR").get(0).getAttribute("value"));
+//        postData.put("evalid", parser.select("input", "name", "__EVENTVALIDATION").get(0).getAttribute("value"));
+//
+//        //TODO: GET VALUES FROM UI INSTEAD OF HARDCODING
+//
+//        postData.put("btnreserve","Create group");
+//        postData.put("duration","0.5");
+//        postData.put("institution","uoit");
+//        postData.put("groupcode","test");
+//        postData.put("groupname","test");
+//        postData.put("notes","test"); //OPTIONAL, however it still need to send it as empty
+//        postData.put("password","nothankyou");
+//        postData.put("studentid","999999999");
+
+        //incorrect student id and password error is expected
+        //cbuf = dataScraper.postBooking(postData);
+
+        //TODO: Setup partial booking joining with non-hardcoded values
         postData.put("vstate", parser.select("input", "name", "__VIEWSTATE").get(0).getAttribute("value"));
         postData.put("vstategen", parser.select("input", "name", "__VIEWSTATEGENERATOR").get(0).getAttribute("value"));
         postData.put("evalid", parser.select("input", "name", "__EVENTVALIDATION").get(0).getAttribute("value"));
+        postData.put("btn","Create or Join a Group");
+        postData.put("radio","swag");
 
-        //TODO: GET VALUES FROM UI INSTEAD OF HARDCODING
+        String groupname = postData.get("radio");
 
-        postData.put("btnreserve","Create group");
-        postData.put("duration","0.5");
-        postData.put("institution","uoit");
-        postData.put("groupcode","test");
-        postData.put("groupname","test");
-        postData.put("notes","test"); //OPTIONAL, however it still need to send it as empty
+        String[] bookingData = new String[2];
+        bookingData[0] = "LIB304";
+        bookingData[1] = "8:30 PM";
+
+        cbuf = dataScraper.selectPartialBooking(postData,bookingData);
+
+        parser = new Parser(cbuf);
+        postData = new HashMap<String,String>();
+        postData.put("vstate", parser.select("input", "name", "__VIEWSTATE").get(0).getAttribute("value"));
+        postData.put("vstategen", parser.select("input", "name", "__VIEWSTATEGENERATOR").get(0).getAttribute("value"));
+        postData.put("evalid", parser.select("input", "name", "__EVENTVALIDATION").get(0).getAttribute("value"));
         postData.put("password","nothankyou");
         postData.put("studentid","999999999");
+        postData.put("btn","Join " + groupname);
 
-        //incorrect student id and password error is expected
-        cbuf = dataScraper.postBooking(postData);
+        //Incorrect student id/password error expected
+        cbuf = dataScraper.joinPartialBooking(postData);
 
-
+<<<<<<< HEAD
 <<<<<<< HEAD
         //TODO: Post booking with retrieved data
         dataScraper.postBooking(formData);
 >>>>>>> 0f5626b5afa2531503ec353f1d3cd91b2981c2c4
 =======
 >>>>>>> 0429e7bd17b65315746dde725fc05e4d6a8650ac
+=======
+        //TODO: Join existing booking...
+        // cbuf = dataScraper.selectBooking(room, time, 2);
+        // scrape cbuf for form data...
+        // cbuf = dataScraper.existingBooking(postData);
+>>>>>>> 6512631b8dd169b6a37390fd41e49f005630feca
 
         long totalTime = System.currentTimeMillis() - startTime;
 
@@ -138,6 +171,7 @@ class ScrapeBookingsTask extends AsyncTask<DataScraper, Void, Integer> {
         System.out.println("Scraped bookings in " + totalTime + " ms.");
 
         return cbuf.length;
+
     }
 
     Booking parseBookingData(String data) {
