@@ -18,6 +18,7 @@ public class CreateBookingTask extends AsyncTask<HashMap<String,String>,String,V
     private Context context;
     private boolean done = false, err = false;
     private String[] formData;
+    private String date;
 
     CreateBookingTask(Context context) {
         this.context = context;
@@ -40,16 +41,15 @@ public class CreateBookingTask extends AsyncTask<HashMap<String,String>,String,V
 
     @Override
     protected Void doInBackground(HashMap<String, String>... params) {
-        while(!done) {
-            //waiting for response from datascraping  intent
+        while(!done) { //blocking code
+            //waiting for response from datascraping intent
         }
 
         HashMap<String,String> postData = params[0];
-
         DataScraper ds = new DataScraper();
 
-        ds.postDate(Integer.parseInt(postData.get("date")), formData);
-
+        date = postData.get("date");
+        ds.postDate(Integer.parseInt(date), formData);
         char[] cbuf = ds.selectBooking(postData.get("room"),postData.get("time"),0);
 
         Parser parser = new Parser(cbuf);
@@ -59,12 +59,18 @@ public class CreateBookingTask extends AsyncTask<HashMap<String,String>,String,V
         postData.put("evalid", parser.select("input", "name", "__EVENTVALIDATION").get(0).getAttribute("value"));
 
         cbuf = ds.postBooking(postData);
-
         parser = new Parser(cbuf);
 
-       if(parser.select("span", "id", "ContentPlaceHolder1_LabelError") != null) {
-           err = true;
-       }
+        //Ensuring that user entered content is valid will prevent this error from occuring
+        if(parser.select("span", "id", "ContentPlaceHolder1_LabelError") != null) {
+            err = true;
+        }
+
+        if(new String(cbuf).contains("HTTP/1.1 500")) {
+            System.out.println("BAD REQUEST");
+            err = true;
+        }
+
 
         return null;
     }
@@ -75,12 +81,15 @@ public class CreateBookingTask extends AsyncTask<HashMap<String,String>,String,V
             dialog.dismiss();
         }
 
+        String successString = "Partial booking successfully created";
         String failedString = "An error has occured. Check your booking and please try again.";
 
         if(err)
             Toast.makeText(context, failedString , Toast.LENGTH_LONG).show();
+        else
+            Toast.makeText(context, successString , Toast.LENGTH_LONG).show();
 
-        //TODO: Confirm successful booking
+        //TODO: send user back to main activity from the posting activity
     }
 
     public class ResponseReceiver extends BroadcastReceiver {
@@ -89,7 +98,7 @@ public class CreateBookingTask extends AsyncTask<HashMap<String,String>,String,V
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            bList = intent.getExtras().getParcelableArrayList("bookinglist");
+            bList = intent.getExtras().getParcelableArrayList(date);
             formData = intent.getExtras().getStringArray("formData");
             dialog.setMessage("Posting booking... please wait.");
             done = true;

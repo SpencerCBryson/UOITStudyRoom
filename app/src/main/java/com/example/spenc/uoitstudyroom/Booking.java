@@ -14,6 +14,7 @@ public class Booking implements Parcelable {
     private String room;
     private String link;
     private int bookingState;
+    private int bookID = new String(room+time).hashCode(); // unique id
 
     Booking(String time, String room, int bookingState) {
         this.time = time;

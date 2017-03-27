@@ -3,7 +3,10 @@ package com.example.spenc.uoitstudyroom;
 import android.app.IntentService;
 import android.content.Intent;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,8 +19,9 @@ public class BookingIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         DataScraper dataScraper = new DataScraper();
-        ArrayList<Booking> bookingList = new ArrayList<>();
+
         String[] formData = new String[4];
+        Intent i = new Intent(SCRAPE_DONE);
 
         char[] cbuf = dataScraper.getRawHtml();
         Parser parser = new Parser(cbuf);
@@ -39,8 +43,12 @@ public class BookingIntentService extends IntentService {
             ids.add(e.getID(link));
         }
 
+
         // Get all postings by date
         for (String id : ids) {
+
+            ArrayList<Booking> bookingList = new ArrayList<>();
+
             int idInt = Integer.parseInt(id);
 
             cbuf = dataScraper.postDate(idInt, formData);
@@ -52,9 +60,12 @@ public class BookingIntentService extends IntentService {
                 Booking booking = parseBookingData(elem.getAttribute("href"));
                 bookingList.add(booking);
             }
+            i.putExtra(id,bookingList);
         }
 
-        notifyFinished(bookingList,formData);
+        i.putExtra("dates",ids);
+        i.putExtra("formData",formData);
+        notifyFinished(i);
     }
 
     Booking parseBookingData(String data) {
@@ -80,10 +91,7 @@ public class BookingIntentService extends IntentService {
 
     public static final String SCRAPE_DONE = "SCRAPE_DONE";
 
-    private void notifyFinished(ArrayList<Booking> bookingList, String[] formData) {
-        Intent i = new Intent(SCRAPE_DONE);
-        i.putExtra("bookinglist", bookingList);
-        i.putExtra("formData",formData);
+    private void notifyFinished(Intent i) {
         BookingIntentService.this.sendBroadcast(i);
     }
 }
