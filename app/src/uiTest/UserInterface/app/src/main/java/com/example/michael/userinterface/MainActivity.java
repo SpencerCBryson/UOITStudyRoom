@@ -31,8 +31,7 @@ public class MainActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int pos, long id){
                 Toast.makeText(getApplicationContext(), "Clicked " + view.getTag(),
                         Toast.LENGTH_SHORT).show();
-                //How to get selected listView instance
-                //System.out.println(view.getTag();
+
 
             }
         });

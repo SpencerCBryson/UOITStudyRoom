@@ -3,10 +3,8 @@ package com.example.spenc.uoitstudyroom;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,34 +12,35 @@ import java.util.regex.Pattern;
  * Scrapes raw HTML data from website, needing to be parsed
  */
 
-class ScrapeBookingsTask extends AsyncTask<DataScraper, Void, Integer> {
+@Deprecated
+class ScrapeBookingsTask extends AsyncTask<Void, Void, ArrayList<Booking>> {
 
     private ProgressDialog dialog;
     ArrayList<Booking> bookingList = new ArrayList<>();
     DataScraper dataScraper = new DataScraper();
 
     ScrapeBookingsTask(MainActivity activity) {
-        dialog = new ProgressDialog(activity);
+        this.dialog = new ProgressDialog(activity);
     }
 
     @Override
     protected void onPreExecute() {
-//        dialog.setMessage("Loading bookings... please wait.");
-//        dialog.show();
+        dialog.setMessage("Loading bookings... please wait.");
+        dialog.show();
     }
 
     @Override
-    protected void onPostExecute(Integer result)
+    protected void onPostExecute(ArrayList<Booking> result)
     {
-        System.out.println("Bytes Read: " + result);
         if (dialog.isShowing()) {
             dialog.dismiss();
         }
+
     }
 
     @Override
-    protected Integer doInBackground(DataScraper... param) {
-        DataScraper dataScraper = param[0];
+    protected ArrayList<Booking> doInBackground(Void... param) {
+        DataScraper dataScraper = new DataScraper();
         String[] formData = new String[4];
 
         long startTime = System.currentTimeMillis();
@@ -98,58 +97,58 @@ class ScrapeBookingsTask extends AsyncTask<DataScraper, Void, Integer> {
 
 
 //        //TODO: Scrape updated eventvalidation and viewstate for posting a certain booking
-        cbuf = dataScraper.selectBooking("LIB304","8:30 PM",1);
+        cbuf = dataScraper.selectBooking("LIB304","6:00 PM",0);
 //
 //        //TODO: Post booking with retrieved data
 
         parser = new Parser(cbuf);
 
-        HashMap<String,String> postData = new HashMap<String,String>();
+        HashMap<String,String> postData = new HashMap<>();
 
+        postData.put("vstate", parser.select("input", "name", "__VIEWSTATE").get(0).getAttribute("value"));
+        postData.put("vstategen", parser.select("input", "name", "__VIEWSTATEGENERATOR").get(0).getAttribute("value"));
+        postData.put("evalid", parser.select("input", "name", "__EVENTVALIDATION").get(0).getAttribute("value"));
+
+        //TODO: GET VALUES FROM UI INSTEAD OF HARDCODING
+
+        postData.put("btnreserve","Create group");
+        postData.put("duration","0.5");
+        postData.put("institution","uoit");
+        postData.put("groupcode","spam");
+        postData.put("groupname","spam");
+        postData.put("notes","test"); //OPTIONAL, however it still need to send it as empty
+        postData.put("password","nothankyou");
+        postData.put("studentid","999999999");
+
+        //incorrect student id and password error is expected
+        cbuf = dataScraper.postBooking(postData);
+
+//        //TODO: Setup partial booking joining with non-hardcoded values
 //        postData.put("vstate", parser.select("input", "name", "__VIEWSTATE").get(0).getAttribute("value"));
 //        postData.put("vstategen", parser.select("input", "name", "__VIEWSTATEGENERATOR").get(0).getAttribute("value"));
 //        postData.put("evalid", parser.select("input", "name", "__EVENTVALIDATION").get(0).getAttribute("value"));
+//        postData.put("btn","Create or Join a Group");
+//        postData.put("radio","swag");
 //
-//        //TODO: GET VALUES FROM UI INSTEAD OF HARDCODING
+//        String groupname = postData.get("radio");
 //
-//        postData.put("btnreserve","Create group");
-//        postData.put("duration","0.5");
-//        postData.put("institution","uoit");
-//        postData.put("groupcode","test");
-//        postData.put("groupname","test");
-//        postData.put("notes","test"); //OPTIONAL, however it still need to send it as empty
+//        String[] bookingData = new String[2];
+//        bookingData[0] = "LIB304";
+//        bookingData[1] = "8:30 PM";
+//
+//        cbuf = dataScraper.selectPartialBooking(postData,bookingData);
+
+//        parser = new Parser(cbuf);
+//        postData = new HashMap<String,String>();
+//        postData.put("vstate", parser.select("input", "name", "__VIEWSTATE").get(0).getAttribute("value"));
+//        postData.put("vstategen", parser.select("input", "name", "__VIEWSTATEGENERATOR").get(0).getAttribute("value"));
+//        postData.put("evalid", parser.select("input", "name", "__EVENTVALIDATION").get(0).getAttribute("value"));
 //        postData.put("password","nothankyou");
 //        postData.put("studentid","999999999");
-
-        //incorrect student id and password error is expected
-        //cbuf = dataScraper.postBooking(postData);
-
-        //TODO: Setup partial booking joining with non-hardcoded values
-        postData.put("vstate", parser.select("input", "name", "__VIEWSTATE").get(0).getAttribute("value"));
-        postData.put("vstategen", parser.select("input", "name", "__VIEWSTATEGENERATOR").get(0).getAttribute("value"));
-        postData.put("evalid", parser.select("input", "name", "__EVENTVALIDATION").get(0).getAttribute("value"));
-        postData.put("btn","Create or Join a Group");
-        postData.put("radio","swag");
-
-        String groupname = postData.get("radio");
-
-        String[] bookingData = new String[2];
-        bookingData[0] = "LIB304";
-        bookingData[1] = "8:30 PM";
-
-        cbuf = dataScraper.selectPartialBooking(postData,bookingData);
-
-        parser = new Parser(cbuf);
-        postData = new HashMap<String,String>();
-        postData.put("vstate", parser.select("input", "name", "__VIEWSTATE").get(0).getAttribute("value"));
-        postData.put("vstategen", parser.select("input", "name", "__VIEWSTATEGENERATOR").get(0).getAttribute("value"));
-        postData.put("evalid", parser.select("input", "name", "__EVENTVALIDATION").get(0).getAttribute("value"));
-        postData.put("password","nothankyou");
-        postData.put("studentid","999999999");
-        postData.put("btn","Join " + groupname);
+//        postData.put("btn","Join " + groupname);
 
         //Incorrect student id/password error expected
-        cbuf = dataScraper.joinPartialBooking(postData);
+//        cbuf = dataScraper.joinPartialBooking(postData);
 
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -167,10 +166,10 @@ class ScrapeBookingsTask extends AsyncTask<DataScraper, Void, Integer> {
 
         long totalTime = System.currentTimeMillis() - startTime;
 
-        //System.out.println(new String(cbuf));
+        System.out.println(new String(cbuf));
         System.out.println("Scraped bookings in " + totalTime + " ms.");
 
-        return cbuf.length;
+        return bookingList;
 
     }
 
@@ -191,7 +190,6 @@ class ScrapeBookingsTask extends AsyncTask<DataScraper, Void, Integer> {
         m.find();
         m_.find();
 
-        Booking booking = new Booking(m.group(), m_.group(), bookingState);
-        return booking;
+        return new Booking(m.group(), m_.group(), bookingState);
     }
 }
