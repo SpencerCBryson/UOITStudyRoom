@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
+import android.widget.Spinner;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,6 +53,7 @@ class ScrapeBookingsTask extends AsyncTask<Void, Void, Void> {
         }
 
         //TODO: UPDATE THE UI IN HERE VIA THE REFERENCE TO `context`
+
 
     }
 

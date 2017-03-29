@@ -2,6 +2,7 @@ package com.example.spenc.uoitstudyroom;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -43,7 +44,6 @@ public class BookingIntentService extends IntentService {
             ids.add(e.getID(link));
         }
 
-
         // Get all postings by date
         for (String id : ids) {
 
@@ -65,6 +65,7 @@ public class BookingIntentService extends IntentService {
 
         i.putExtra("dates",ids);
         i.putExtra("formData",formData);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(i);
         notifyFinished(i);
     }
 

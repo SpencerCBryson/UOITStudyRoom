@@ -54,6 +54,22 @@ public class Booking implements Parcelable {
 
     public int getBookingState() {return bookingState; }
 
+    public String formatReq() { return "Min: " + this.getMinReq() + " | Max: " + this.getCapacity();}
+
+    public int getCapacity() {
+        if(room.equals("LIB202A") || room.equals("LIB202B") || room.equals("LIB202C"))
+            return 4;
+        else
+            return 8;
+    }
+
+    public int getMinReq() {
+        if(room.equals("LIB202A") || room.equals("LIB202B") || room.equals("LIB202C"))
+            return 2;
+        else
+            return 3;
+    }
+
     @Override
     public int describeContents() {
         return 0;
