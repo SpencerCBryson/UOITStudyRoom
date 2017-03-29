@@ -21,6 +21,8 @@
         <service android:name=".BookingIntentService" />
 
         <activity android:name=".CreateBookingActivity"></activity>
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".SplashScreen"/>
     </application>
 
 </manifest>
