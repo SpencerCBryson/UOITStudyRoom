@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
  * Scrapes raw HTML data from website, needing to be parsed
  */
 
+@Deprecated
 class ScrapeBookingsTask extends AsyncTask<Void, Void, Void> {
 
     private ProgressDialog dialog;

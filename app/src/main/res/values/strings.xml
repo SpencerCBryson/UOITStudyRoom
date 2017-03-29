@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">UOITStudyRoom</string>
+    <string name="title_activity_joing_booking">JoingBookingActivity</string>
+    <string name="title_activity_join_booking">JoinBookingActivity</string>
 </resources>

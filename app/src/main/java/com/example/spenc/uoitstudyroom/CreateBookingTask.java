@@ -11,6 +11,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+@Deprecated
 public class CreateBookingTask extends AsyncTask<HashMap<String,String>,String,Void> {
 
     private ProgressDialog dialog;

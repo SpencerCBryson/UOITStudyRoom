@@ -7,11 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
-import android.provider.SyncStateContract;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -19,7 +19,6 @@ import android.widget.Spinner;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,7 +28,10 @@ public class MainActivity extends AppCompatActivity {
     ArrayAdapter<String> arrayAdapter;
     ArrayList<Booking> display;
     final HashMap<String,ArrayList<Booking>> bookingMap = new HashMap<>();
+    HashMap<String, String> dateToId = new HashMap<>();
     ArrayList<Booking> bList;
+    private String[] formData;
+    String selectedDateId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
         bookingList = (ListView) findViewById(R.id.bookingList);
         dateSpinner = (Spinner) findViewById(R.id.dateSpinner);
 
-        //TODO: FINISH THE TASK !!!
         AsyncTask task = new ScrapeBookingsTask(this).execute();
 
         Button button = (Button) findViewById(R.id.loadBookings);
@@ -48,11 +49,48 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String date = (String) dateSpinner.getSelectedItem();
+                selectedDateId = dateToId.get(date);
                 display.clear();
-                ArrayList<Booking> bookings = bookingMap.get(date);
+                ArrayList<Booking> bookings = bookingMap.get(selectedDateId);
                 for (Booking booking : bookings)
                     display.add(booking);
                 bookingAdapter.notifyDataSetChanged();
+            }
+        });
+
+        // TODO: IMPLEMENT FILTER BUTTONS HERE
+
+        bookingList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Booking selected = display.get(position);
+                System.out.println(selectedDateId);
+
+                // TODO: IMPLEMENT JOIN ONLY AND PARTIAL BOOKING ACTIVITIES
+
+                switch (selected.getBookingState()) {
+                    case 0:
+                        Intent joinIntent =
+                                new Intent(view.getContext(), CreateBookingActivity.class);
+                        joinIntent.putExtra("booking", selected);
+                        joinIntent.putExtra("date", selectedDateId);
+                        joinIntent.putExtra("formData", formData);
+                        startActivity(joinIntent);
+                        break;
+                    case 1:
+                        Intent partialIntent =
+                                new Intent(view.getContext(), CreateBookingActivity.class);
+                        partialIntent.putExtra("booking", selected);
+                        startActivity(partialIntent);
+                        break;
+                    case 2:
+                        Intent joinOnlyIntent =
+                                new Intent(view.getContext(), CreateBookingActivity.class);
+                        joinOnlyIntent.putExtra("booking", selected);
+                        startActivity(joinOnlyIntent);
+                        break;
+                }
+
             }
         });
 
@@ -68,8 +106,8 @@ public class MainActivity extends AppCompatActivity {
         private ProgressDialog dialog;
         private Activity context;
         boolean done = false;
-        private String[] formData;
         private ArrayList<String> dates;
+        public ArrayList<String> dateStrings;
 
 
         ScrapeBookingsTask(MainActivity activity) {
@@ -99,9 +137,8 @@ public class MainActivity extends AppCompatActivity {
                 dialog.dismiss();
             }
 
-            //TODO: UPDATE THE UI IN HERE VIA THE REFERENCE TO `context`
-
-            arrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, dates);
+            arrayAdapter = new ArrayAdapter<>(context,
+                    android.R.layout.simple_spinner_item, dateStrings);
             arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             System.out.println(dates.get(0) + bookingMap.get(dates.get(0)).size());
             display = new ArrayList<>(bookingMap.get(dates.get(0)));
@@ -121,8 +158,6 @@ public class MainActivity extends AppCompatActivity {
                 //waiting for response from datascraping intent
             }
 
-            //TODO: YOUR DATA IS IN `bookingMap` and `dates`!!!!!!!!!!!!!
-
 
             return null;
         }
@@ -135,12 +170,17 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onReceive(Context context, Intent intent) {
-                dates = intent.getExtras().getStringArrayList("dates");
                 Bundle extras = intent.getExtras();
+                dates = extras.getStringArrayList("dates");
+                dateStrings = extras.getStringArrayList("dateStrings");
 
                 for(String date : dates) {
                     bookingMap.put(date, (ArrayList) extras.getParcelableArrayList(date));
                 }
+
+                for (int i = 0; i < dates.size(); i++)
+                    dateToId.put(dateStrings.get(i), dates.get(i));
+
                 formData = intent.getExtras().getStringArray("formData");
                 done = true;
             }

@@ -13,8 +13,9 @@ public class Booking implements Parcelable {
     private String time;
     private String room;
     private String link;
+    private String group;
     private int bookingState;
-    private int bookID = new String(room+time).hashCode(); // unique id
+    //private int bookID = new String(room+time).hashCode(); // unique id
 
     Booking(String time, String room, int bookingState) {
         this.time = time;
@@ -23,7 +24,7 @@ public class Booking implements Parcelable {
     }
 
 
-    protected Booking(Parcel in) {
+    Booking(Parcel in) {
         time = in.readString();
         room = in.readString();
         link = in.readString();
@@ -42,9 +43,21 @@ public class Booking implements Parcelable {
         }
     };
 
-    public String getTime() { return time; }
+    String[] getValidDurations() {
+        // TODO: IMPLEMENT THE FOLLOWING METHOD TO SCRAPE AND CHECK FOLLOWING BOOKINGS FOR VALID DURATIONS.
 
-    public String getRoom() {
+        // Bootleg version to follow
+
+        return new String[] {"0.5", "1", "1.5", "2"};
+    }
+
+    String getInfo() {
+        return time + "\n" + room + "\n" + link + "\n" + group;
+    }
+
+    String getTime() { return time; }
+
+    String getRoom() {
         return room;
     }
 
@@ -52,18 +65,18 @@ public class Booking implements Parcelable {
         return link;
     }
 
-    public int getBookingState() {return bookingState; }
+    int getBookingState() {return bookingState; }
 
-    public String formatReq() { return "Min: " + this.getMinReq() + " | Max: " + this.getCapacity();}
+    String formatReq() { return "Min: " + this.getMinReq() + " | Max: " + this.getCapacity();}
 
-    public int getCapacity() {
+    int getCapacity() {
         if(room.equals("LIB202A") || room.equals("LIB202B") || room.equals("LIB202C"))
             return 4;
         else
             return 8;
     }
 
-    public int getMinReq() {
+    int getMinReq() {
         if(room.equals("LIB202A") || room.equals("LIB202B") || room.equals("LIB202C"))
             return 2;
         else

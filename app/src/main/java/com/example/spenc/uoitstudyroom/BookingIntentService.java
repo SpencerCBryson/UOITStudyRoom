@@ -38,10 +38,12 @@ public class BookingIntentService extends IntentService {
         ArrayList<Element> aElems = parser.getElements(elems, "a", "href");
 
         ArrayList<String> ids = new ArrayList<>();
+        ArrayList<String> dateStrings = new ArrayList<>();
 
         for (Element e : aElems) {
             String link = e.getAttribute("href");
             ids.add(e.getID(link));
+            dateStrings.add(e.getAttribute("title"));
         }
 
         // Get all postings by date
@@ -65,6 +67,7 @@ public class BookingIntentService extends IntentService {
 
         i.putExtra("dates",ids);
         i.putExtra("formData",formData);
+        i.putExtra("dateStrings", dateStrings);
         LocalBroadcastManager.getInstance(this).sendBroadcast(i);
         notifyFinished(i);
     }
