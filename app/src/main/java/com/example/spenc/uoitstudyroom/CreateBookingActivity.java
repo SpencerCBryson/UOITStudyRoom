@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -34,6 +35,11 @@ public class CreateBookingActivity extends AppCompatActivity {
         final String id = extras.getString("date");
         formData = extras.getStringArray("formData");
 
+        SharedPreferences preferences = getSharedPreferences("login", Activity.MODE_PRIVATE);
+
+        final String studentid = preferences.getString("studentid", "");
+        final String password = preferences.getString("password", "");
+
         Button createButton = (Button) findViewById(R.id.createButton);
         TextView bookingInfo = (TextView) findViewById(R.id.bookingInfo);
         bookingInfo.setText(booking.getRoom() + "\n" + booking.getTime() + "\n");
@@ -52,6 +58,13 @@ public class CreateBookingActivity extends AppCompatActivity {
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (studentid.isEmpty() || password.isEmpty()) {
+                    Intent i = new Intent(v.getContext(), LoginActivity.class);
+                    i.putExtra("skipped", true);
+                    startActivity(i);
+                    return;
+                }
+
                 String groupName = groupNameField.getText().toString();
                 String groupCode = groupCodeField.getText().toString();
                 Boolean isUOIT = uoitSelected.isChecked();
@@ -67,8 +80,8 @@ public class CreateBookingActivity extends AppCompatActivity {
                 postData.put("institution", isUOIT ? "uoit" : "dc");
                 postData.put("groupcode", groupCode);
                 postData.put("groupname", groupName);
-                postData.put("password", "no");
-                postData.put("studentid", "100590934");
+                postData.put("password", studentid);
+                postData.put("studentid", password);
                 postData.put("notes", "test");
 
                 AsyncTask task = new CreateBookingTask(v.getContext()).execute(postData);

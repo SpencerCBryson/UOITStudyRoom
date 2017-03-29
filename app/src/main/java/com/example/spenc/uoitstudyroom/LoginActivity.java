@@ -1,6 +1,8 @@
 package com.example.spenc.uoitstudyroom;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Build;
 import android.os.Bundle;;
@@ -20,11 +22,15 @@ import android.widget.TextView;
 public class LoginActivity extends AppCompatActivity {
     private EditText mSIDView;
     private EditText mPasswordView;
+    Boolean skipped = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login2);
+        setContentView(R.layout.activity_login);
+        Intent i = this.getIntent();
+
+        if (i.getExtras() != null) skipped = true;
 
         mSIDView = (EditText) findViewById(R.id.sid);
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -40,10 +46,18 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         Button signInButton = (Button) findViewById(R.id.sign_in_button);
+        Button skipButton = (Button) findViewById(R.id.skip_button);
         signInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptLogin();
+            }
+        });
+        skipButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(v.getContext(), MainActivity.class);
+                startActivity(i);
             }
         });
     }
@@ -65,11 +79,11 @@ public class LoginActivity extends AppCompatActivity {
         View focusView = null;
 
         // Check if password is valid.
-        if (!TextUtils.isEmpty(password)) {
+        if (TextUtils.isEmpty(password)) {
             mPasswordView.setError(getString(R.string.error_field_required));
             focusView = mPasswordView;
             cancel = true;
-        }else if (!isPasswordValid(password)) {
+        } else if (!isPasswordValid(password)) {
             mSIDView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
@@ -92,7 +106,17 @@ public class LoginActivity extends AppCompatActivity {
             focusView.requestFocus();
         } else {
             //Login Passed, Finish task and move on to MainActivity (BookingList)
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            SharedPreferences preferences = getSharedPreferences("login", Activity.MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+
+            editor.putString("studentid", sid);
+            editor.putString("password", password);
+
+            editor.apply();
+
+            if (!skipped)
+                startActivity(new Intent(this, MainActivity.class));
+
             finish();
         }
     }

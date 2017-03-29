@@ -83,9 +83,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_gravity="center_vertical|center_horizontal"
-                android:background="@color/colorPrimary"
                 android:text="@string/action_sign_in"
                 android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/skip_button"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="225dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:layout_weight="1"
+                android:text="Skip" />
 
         </LinearLayout>
     </ScrollView>

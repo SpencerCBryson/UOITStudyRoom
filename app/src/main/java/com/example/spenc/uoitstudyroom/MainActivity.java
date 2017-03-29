@@ -147,8 +147,7 @@ public class MainActivity extends AppCompatActivity {
             bookingAdapter = new BookingAdapter(context, display);
             bookingList.setAdapter(bookingAdapter);
             bookingAdapter.notifyDataSetChanged();
-
-
+            selectedDateId = dates.get(0);
         }
 
         @Override
