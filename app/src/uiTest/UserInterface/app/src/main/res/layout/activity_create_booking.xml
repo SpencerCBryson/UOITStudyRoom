@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.michael.userinterface.CreateBooking"
+    android:background="@color/colorPlatinum"
+    tools:layout_editor_absoluteY="25dp"
+    tools:layout_editor_absoluteX="0dp">
+
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/BookingArea"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
+            android:text="Area dedicated to booking selected"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <SeekBar
+            android:id="@+id/duration"
+            style="@style/Widget.AppCompat.SeekBar.Discrete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:max="3"
+            android:progress="1" />
+
+        <EditText
+            android:id="@+id/groupName"
+            android:layout_width="250dp"
+            android:layout_height="15dp"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="Group Name"
+            android:inputType="textPersonName"
+            android:textAlignment="center" />
+
+        <EditText
+            android:id="@+id/groupCode"
+            android:layout_width="250dp"
+            android:layout_height="15dp"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="Group Code"
+            android:inputType="textPersonName"
+            android:textAlignment="center" />
+
+        <EditText
+            android:id="@+id/notes"
+            android:layout_width="250dp"
+            android:layout_height="15dp"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="Additional Notes"
+            android:inputType="textPersonName"
+            android:textAlignment="center" />
+
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="250dp"
+            android:layout_height="15dp"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="Network Password"
+            android:inputType="textPassword"
+            android:selectAllOnFocus="false"
+            android:textAlignment="center" />
+
+        <EditText
+            android:id="@+id/studentNum"
+            android:layout_width="250dp"
+            android:layout_height="15dp"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="Student Number"
+            android:inputType="textPersonName"
+            android:textAlignment="center" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/createGroup"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="150dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="100dp"
+                android:layout_marginTop="20dp"
+                android:background="@color/colorPrimary"
+                android:text="Create Group"
+                android:textAlignment="center" />
+
+            <Button
+                android:id="@+id/Back"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="75dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="20dp"
+                android:background="@color/colorPrimary"
+                android:text="Back"
+                android:textAlignment="center" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

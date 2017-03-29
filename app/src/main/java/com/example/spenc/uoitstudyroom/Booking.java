@@ -14,6 +14,10 @@ public class Booking implements Parcelable {
     private String room;
     private String link;
     private int bookingState;
+<<<<<<< HEAD
+=======
+    private int bookID = new String(room+time).hashCode(); // unique id
+>>>>>>> fe7240e5aeb3a7b8906f587400ecfb814bd67fc2
 
     Booking(String time, String room, int bookingState) {
         this.time = time;
@@ -53,6 +57,25 @@ public class Booking implements Parcelable {
 
     public int getBookingState() {return bookingState; }
 
+<<<<<<< HEAD
+=======
+    public String formatReq() { return "Min: " + this.getMinReq() + " | Max: " + this.getCapacity();}
+
+    public int getCapacity() {
+        if(room.equals("LIB202A") || room.equals("LIB202B") || room.equals("LIB202C"))
+            return 4;
+        else
+            return 8;
+    }
+
+    public int getMinReq() {
+        if(room.equals("LIB202A") || room.equals("LIB202B") || room.equals("LIB202C"))
+            return 2;
+        else
+            return 3;
+    }
+
+>>>>>>> fe7240e5aeb3a7b8906f587400ecfb814bd67fc2
     @Override
     public int describeContents() {
         return 0;

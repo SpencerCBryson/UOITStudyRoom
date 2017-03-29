@@ -2,8 +2,17 @@ package com.example.spenc.uoitstudyroom;
 
 import android.app.IntentService;
 import android.content.Intent;
+<<<<<<< HEAD
 
 import java.util.ArrayList;
+=======
+import android.support.v4.content.LocalBroadcastManager;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+>>>>>>> fe7240e5aeb3a7b8906f587400ecfb814bd67fc2
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,8 +25,14 @@ public class BookingIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         DataScraper dataScraper = new DataScraper();
+<<<<<<< HEAD
         ArrayList<Booking> bookingList = new ArrayList<>();
         String[] formData = new String[4];
+=======
+
+        String[] formData = new String[4];
+        Intent i = new Intent(SCRAPE_DONE);
+>>>>>>> fe7240e5aeb3a7b8906f587400ecfb814bd67fc2
 
         char[] cbuf = dataScraper.getRawHtml();
         Parser parser = new Parser(cbuf);
@@ -41,6 +56,12 @@ public class BookingIntentService extends IntentService {
 
         // Get all postings by date
         for (String id : ids) {
+<<<<<<< HEAD
+=======
+
+            ArrayList<Booking> bookingList = new ArrayList<>();
+
+>>>>>>> fe7240e5aeb3a7b8906f587400ecfb814bd67fc2
             int idInt = Integer.parseInt(id);
 
             cbuf = dataScraper.postDate(idInt, formData);
@@ -52,9 +73,19 @@ public class BookingIntentService extends IntentService {
                 Booking booking = parseBookingData(elem.getAttribute("href"));
                 bookingList.add(booking);
             }
+<<<<<<< HEAD
         }
 
         notifyFinished(bookingList,formData);
+=======
+            i.putExtra(id,bookingList);
+        }
+
+        i.putExtra("dates",ids);
+        i.putExtra("formData",formData);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(i);
+        notifyFinished(i);
+>>>>>>> fe7240e5aeb3a7b8906f587400ecfb814bd67fc2
     }
 
     Booking parseBookingData(String data) {
@@ -80,10 +111,14 @@ public class BookingIntentService extends IntentService {
 
     public static final String SCRAPE_DONE = "SCRAPE_DONE";
 
+<<<<<<< HEAD
     private void notifyFinished(ArrayList<Booking> bookingList, String[] formData) {
         Intent i = new Intent(SCRAPE_DONE);
         i.putExtra("bookinglist", bookingList);
         i.putExtra("formData",formData);
+=======
+    private void notifyFinished(Intent i) {
+>>>>>>> fe7240e5aeb3a7b8906f587400ecfb814bd67fc2
         BookingIntentService.this.sendBroadcast(i);
     }
 }

@@ -1,7 +1,12 @@
 package com.example.spenc.uoitstudyroom;
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
+import android.widget.Spinner;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,21 +17,33 @@ import java.util.regex.Pattern;
  * Scrapes raw HTML data from website, needing to be parsed
  */
 
+<<<<<<< HEAD
 @Deprecated
 class ScrapeBookingsTask extends AsyncTask<Void, Void, ArrayList<Booking>> {
+=======
+class ScrapeBookingsTask extends AsyncTask<Void, Void, Void> {
+>>>>>>> fe7240e5aeb3a7b8906f587400ecfb814bd67fc2
 
     private ProgressDialog dialog;
-    ArrayList<Booking> bookingList = new ArrayList<>();
-    DataScraper dataScraper = new DataScraper();
+    private HashMap<String,ArrayList<Booking>> bookingMap = new HashMap<>();
+    private Context context;
+    boolean done = false;
+    private String[] formData;
+    private String[] dates;
 
     ScrapeBookingsTask(MainActivity activity) {
         this.dialog = new ProgressDialog(activity);
+<<<<<<< HEAD
+=======
+        context = activity;
+>>>>>>> fe7240e5aeb3a7b8906f587400ecfb814bd67fc2
     }
 
     @Override
     protected void onPreExecute() {
         dialog.setMessage("Loading bookings... please wait.");
         dialog.show();
+<<<<<<< HEAD
     }
 
     @Override
@@ -42,44 +59,58 @@ class ScrapeBookingsTask extends AsyncTask<Void, Void, ArrayList<Booking>> {
     protected ArrayList<Booking> doInBackground(Void... param) {
         DataScraper dataScraper = new DataScraper();
         String[] formData = new String[4];
+=======
 
-        long startTime = System.currentTimeMillis();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BookingIntentService.SCRAPE_DONE);
+        ScrapeBookingsTask.ResponseReceiver rr = new ScrapeBookingsTask.ResponseReceiver();
+        context.registerReceiver(rr, intentFilter);
 
-        char[] cbuf = dataScraper.getRawHtml();
-        Parser parser = new Parser(cbuf);
+        Intent i = new Intent(context, BookingIntentService.class);
+        context.startService(i);
+    }
 
-        formData[0] = "ctl00$ContentPlaceHolder1$Calendar1";
-        formData[1] = parser.select("input", "name", "__VIEWSTATE").get(0).getAttribute("value");
-        formData[2] = parser.select("input", "name", "__VIEWSTATEGENERATOR").get(0).getAttribute("value");
-        formData[3] = parser.select("input", "name", "__EVENTVALIDATION").get(0).getAttribute("value");
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        super.onPostExecute(aVoid);
+        if (dialog.isShowing()) {
+            dialog.dismiss();
+        }
+>>>>>>> fe7240e5aeb3a7b8906f587400ecfb814bd67fc2
 
-        // Get dates
+        //TODO: UPDATE THE UI IN HERE VIA THE REFERENCE TO `context`
 
-        ArrayList<Element> elems = parser.select("table", "id", "ContentPlaceHolder1_Calendar1");
-        ArrayList<Element> aElems = parser.getElements(elems, "a", "href");
 
-        ArrayList<String> ids = new ArrayList<>();
+    }
 
-        for (Element e : aElems) {
-            String link = e.getAttribute("href");
-            ids.add(e.getID(link));
+    @Override
+    protected Void doInBackground(Void... param) {
+
+        while(!done) { //blocking code
+            //waiting for response from datascraping intent
         }
 
-        // Get all postings by date
-        for (String id : ids) {
-            System.out.println(id);
-            int idInt = Integer.parseInt(id);
+        //TODO: YOUR DATA IS IN `bookingMap` and `dates`!!!!!!!!!!!!!
 
-            cbuf = dataScraper.postDate(idInt, formData);
-            parser = new Parser(cbuf);
-            elems = parser.select("table", "id", "ContentPlaceHolder1_Table1");
-            ArrayList<Element> bookingElems = parser.getElements(elems, "a", "href");
 
-            for (Element elem : bookingElems) {
-                Booking booking = parseBookingData(elem.getAttribute("href"));
-                bookingList.add(booking);
+        return null;
+    }
+
+    public class ResponseReceiver extends BroadcastReceiver {
+        public static final String ACTION_RESP =
+                "SCRAPE_DONE";
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            dates = intent.getExtras().getStringArray("dates");
+            for(String date : dates) {
+                ArrayList<Booking> bList = intent.getExtras().getParcelableArrayList(date);
+                bookingMap.put(date,bList);
             }
+            formData = intent.getExtras().getStringArray("formData");
+            done = true;
         }
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 //        for (Booking b : bookingList)
@@ -193,3 +224,44 @@ class ScrapeBookingsTask extends AsyncTask<Void, Void, ArrayList<Booking>> {
         return new Booking(m.group(), m_.group(), bookingState);
     }
 }
+=======
+    }
+}
+
+//        //TODO: Setup partial booking joining with non-hardcoded values
+//        postData.put("vstate", parser.select("input", "name", "__VIEWSTATE").get(0).getAttribute("value"));
+//        postData.put("vstategen", parser.select("input", "name", "__VIEWSTATEGENERATOR").get(0).getAttribute("value"));
+//        postData.put("evalid", parser.select("input", "name", "__EVENTVALIDATION").get(0).getAttribute("value"));
+//        postData.put("btn","Create or Join a Group");
+//        postData.put("radio","swag");
+//
+//        String groupname = postData.get("radio");
+//
+//        String[] bookingData = new String[2];
+//        bookingData[0] = "LIB304";
+//        bookingData[1] = "8:30 PM";
+//
+//        cbuf = dataScraper.selectPartialBooking(postData,bookingData);
+
+//        parser = new Parser(cbuf);
+//        postData = new HashMap<String,String>();
+//        postData.put("vstate", parser.select("input", "name", "__VIEWSTATE").get(0).getAttribute("value"));
+//        postData.put("vstategen", parser.select("input", "name", "__VIEWSTATEGENERATOR").get(0).getAttribute("value"));
+//        postData.put("evalid", parser.select("input", "name", "__EVENTVALIDATION").get(0).getAttribute("value"));
+//        postData.put("password","nothankyou");
+//        postData.put("studentid","999999999");
+//        postData.put("btn","Join " + groupname);
+
+//Incorrect student id/password error expected
+//        cbuf = dataScraper.joinPartialBooking(postData);
+
+//TODO: Join existing booking...
+// cbuf = dataScraper.selectBooking(room, time, 2);
+// scrape cbuf for form data...
+// cbuf = dataScraper.existingBooking(postData);
+
+//        long totalTime = System.currentTimeMillis() - startTime;
+
+//        System.out.println(new String(cbuf));
+//System.out.println("Scraped bookings in " + totalTime + " ms.");
+>>>>>>> fe7240e5aeb3a7b8906f587400ecfb814bd67fc2
