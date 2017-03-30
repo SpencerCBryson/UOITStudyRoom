@@ -33,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     private String[] formData;
     String selectedDateId;
     ProgressDialog dialog;
+    final HashMap<String, HashMap<String, BookingRoom>> bookingRooms
+            = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +127,18 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             System.out.println("Received intent");
+            Bundle extras = intent.getExtras();
+
+            ArrayList<String> dateIds = extras.getStringArrayList("dates");
+            ArrayList<String> dateStrings = extras.getStringArrayList("dateStrings");
+
+            for (int i = 0; i < dateIds.size(); i++) {
+                bookingRooms.put(dateIds.get(i),
+                        (HashMap) extras.get(dateIds.get(i)));
+                dateToId.put(dateIds.get(i), dateStrings.get(i));
+            }
+
+
 
             dialog.hide();
         }

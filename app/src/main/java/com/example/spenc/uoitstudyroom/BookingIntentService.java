@@ -46,13 +46,15 @@ public class BookingIntentService extends IntentService {
             dateStrings.add(e.getAttribute("title"));
         }
 
+        HashMap<String, BookingRoom> bookingRooms = new HashMap<>();
+
         // Get all postings by date
         for (String id : ids) {
 
-            ArrayList<Booking> bookingList = new ArrayList<>();
+           // ArrayList<BookingRoom> bookingRooms = new ArrayList<>();
+
 
             int idInt = Integer.parseInt(id);
-
             cbuf = dataScraper.postDate(idInt, formData);
             parser = new Parser(cbuf);
             elems = parser.select("table", "id", "ContentPlaceHolder1_Table1");
@@ -60,9 +62,14 @@ public class BookingIntentService extends IntentService {
 
             for (Element elem : bookingElems) {
                 Booking booking = parseBookingData(elem.getAttribute("href"));
-                bookingList.add(booking);
+                if (!bookingRooms.containsKey(booking.getRoom())) {
+                    bookingRooms.put(booking.getRoom(), new BookingRoom(booking.getRoom()));
+                    bookingRooms.get(booking.getRoom()).add(booking);
+                } else {
+                    bookingRooms.get(booking.getRoom()).add(booking);
+                }
             }
-            i.putExtra(id,bookingList);
+            i.putExtra(id,bookingRooms);
         }
 
         i.putExtra("dates",ids);
