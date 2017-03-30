@@ -2,6 +2,7 @@ package com.example.spenc.uoitstudyroom;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Build;
@@ -26,8 +27,13 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // CREATE RR
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         Intent i = this.getIntent();
 
         if (i.getExtras() != null) skipped = true;
@@ -56,8 +62,7 @@ public class LoginActivity extends AppCompatActivity {
         skipButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(v.getContext(), MainActivity.class);
-                startActivity(i);
+                finish();
             }
         });
     }
@@ -113,9 +118,6 @@ public class LoginActivity extends AppCompatActivity {
             editor.putString("password", password);
 
             editor.apply();
-
-            if (!skipped)
-                startActivity(new Intent(this, MainActivity.class));
 
             finish();
         }

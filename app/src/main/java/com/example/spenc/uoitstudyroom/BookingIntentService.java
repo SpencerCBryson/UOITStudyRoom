@@ -69,7 +69,8 @@ public class BookingIntentService extends IntentService {
         i.putExtra("formData",formData);
         i.putExtra("dateStrings", dateStrings);
         LocalBroadcastManager.getInstance(this).sendBroadcast(i);
-        notifyFinished(i);
+
+        //notifyFinished(i);
     }
 
     Booking parseBookingData(String data) {

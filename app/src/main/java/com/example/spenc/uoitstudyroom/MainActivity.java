@@ -32,17 +32,34 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Booking> bList;
     private String[] formData;
     String selectedDateId;
+    ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        dialog = new ProgressDialog(this);
+
+        IntentFilter intentFilter = new IntentFilter(BookingIntentService.SCRAPE_DONE);
+        Intent scrape = new Intent(this, BookingIntentService.class);
+        this.startService(scrape);
+        ResponseReceiver rr = new ResponseReceiver();
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                rr, intentFilter
+        );
+
+        dialog.setMessage("Loading bookings... please wait.");
+        dialog.show();
+
+        startActivity(new Intent(this, LoginActivity.class));
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+
         bookingList = (ListView) findViewById(R.id.bookingList);
         dateSpinner = (Spinner) findViewById(R.id.dateSpinner);
-
-        AsyncTask task = new ScrapeBookingsTask(this).execute();
 
         Button button = (Button) findViewById(R.id.loadBookings);
         button.setOnClickListener(new View.OnClickListener() {
@@ -101,88 +118,15 @@ public class MainActivity extends AppCompatActivity {
         /* END OF DRIVER CODE FOR POSTING A NEW BOOKING */
     }
 
-    class ScrapeBookingsTask extends AsyncTask<Void, Void, Void> {
-
-        private ProgressDialog dialog;
-        private Activity context;
-        boolean done = false;
-        private ArrayList<String> dates;
-        public ArrayList<String> dateStrings;
-
-
-        ScrapeBookingsTask(MainActivity activity) {
-            this.dialog = new ProgressDialog(activity);
-            context = activity;
-        }
+    public class ResponseReceiver extends BroadcastReceiver {
+        public static final String ACTION_RESP =
+                "SCRAPE_DONE";
 
         @Override
-        protected void onPreExecute() {
-            dialog.setMessage("Loading bookings... please wait.");
-            dialog.show();
+        public void onReceive(Context context, Intent intent) {
+            System.out.println("Received intent");
 
-            IntentFilter intentFilter = new IntentFilter(BookingIntentService.SCRAPE_DONE);
-            ResponseReceiver rr = new ResponseReceiver();
-            LocalBroadcastManager.getInstance(context).registerReceiver(
-                    rr, intentFilter
-            );
-
-            Intent i = new Intent(context, BookingIntentService.class);
-            context.startService(i);
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            if (dialog.isShowing()) {
-                dialog.dismiss();
-            }
-
-            arrayAdapter = new ArrayAdapter<>(context,
-                    android.R.layout.simple_spinner_item, dateStrings);
-            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            System.out.println(dates.get(0) + bookingMap.get(dates.get(0)).size());
-            display = new ArrayList<>(bookingMap.get(dates.get(0)));
-
-            dateSpinner.setAdapter(arrayAdapter);
-            bookingAdapter = new BookingAdapter(context, display);
-            bookingList.setAdapter(bookingAdapter);
-            bookingAdapter.notifyDataSetChanged();
-            selectedDateId = dates.get(0);
-        }
-
-        @Override
-        protected Void doInBackground(Void... param) {
-
-            while(!done) { //blocking code
-                //waiting for response from datascraping intent
-            }
-
-
-            return null;
-        }
-
-        public class ResponseReceiver extends BroadcastReceiver {
-            public static final String ACTION_RESP =
-                    "SCRAPE_DONE";
-
-            ResponseReceiver() {}
-
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                Bundle extras = intent.getExtras();
-                dates = extras.getStringArrayList("dates");
-                dateStrings = extras.getStringArrayList("dateStrings");
-
-                for(String date : dates) {
-                    bookingMap.put(date, (ArrayList) extras.getParcelableArrayList(date));
-                }
-
-                for (int i = 0; i < dates.size(); i++)
-                    dateToId.put(dateStrings.get(i), dates.get(i));
-
-                formData = intent.getExtras().getStringArray("formData");
-                done = true;
-            }
+            dialog.hide();
         }
     }
 }

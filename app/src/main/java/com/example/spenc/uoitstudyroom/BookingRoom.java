@@ -1,5 +1,7 @@
 package com.example.spenc.uoitstudyroom;
 
+import java.util.ArrayList;
+
 /**
  * BookARoom
  * <p>
@@ -7,4 +9,12 @@ package com.example.spenc.uoitstudyroom;
  */
 
 public class BookingRoom {
+    String room;
+    ArrayList<Booking> bookings = new ArrayList<>();
+
+    public BookingRoom(String room) {
+        this.room = room;
+    }
+
+
 }
