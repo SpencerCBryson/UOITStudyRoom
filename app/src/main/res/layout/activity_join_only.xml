@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.spenc.uoitstudyroom.JoinOnlyBooking">
+
+
+    <TextView
+        android:id="@+id/bookingInfo"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:text="Booking Information Here" />
+
+    <ListView
+        android:id="@+id/groupList"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"></ListView>
+
+    <Button
+        android:id="@+id/joinButton"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:text="Join"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:textStyle="bold" />
+</LinearLayout>
