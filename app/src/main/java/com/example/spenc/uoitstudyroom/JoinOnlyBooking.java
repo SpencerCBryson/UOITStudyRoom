@@ -26,11 +26,13 @@ public class JoinOnlyBooking extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //Selection of listView applied here
-
-        //Add items to grouplist using:
-        //R.id.join_group_name
-        //R.id.join_group_code
-    }
+                System.out.println("");
+                //Add items to grouplist using:
+                //R.id.join_group_name
+                //R.id.join_group_code
+            }
+            });
+    ;}
 
 }
 
