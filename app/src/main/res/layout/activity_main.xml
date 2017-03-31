@@ -18,45 +18,52 @@
         <Spinner
             android:id="@+id/dateSpinner"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="40dp" />
 
-        <Button
-            android:id="@+id/loadBookings"
+        <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Button" />
+            android:layout_height="match_parent"
+            android:id="@+id/rv"
+            android:scrollbars="vertical"
+            />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="150px"
-            android:orientation="horizontal">
+        <!--<Button-->
+            <!--android:id="@+id/loadBookings"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Button" />-->
 
-            <ToggleButton
-                android:id="@+id/toggleButton3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Open" />
+        <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="150px"-->
+            <!--android:orientation="horizontal">-->
 
-            <ToggleButton
-                android:id="@+id/toggleButton2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Partial" />
+            <!--<ToggleButton-->
+                <!--android:id="@+id/toggleButton3"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_weight="1"-->
+                <!--android:textOff="Open" />-->
 
-            <ToggleButton
-                android:id="@+id/toggleButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Join Only?" />
-        </LinearLayout>
+            <!--<ToggleButton-->
+                <!--android:id="@+id/toggleButton2"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_weight="1"-->
+                <!--android:textOff="Partial" />-->
 
-        <ListView
-            android:id="@+id/bookingList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"></ListView>
+            <!--<ToggleButton-->
+                <!--android:id="@+id/toggleButton"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_weight="1"-->
+                <!--android:textOff="Join Only?" />-->
+        <!--</LinearLayout>-->
+
+        <!--<ListView-->
+            <!--android:id="@+id/bookingList"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"></ListView>-->
 
     </LinearLayout>
 </RelativeLayout>
