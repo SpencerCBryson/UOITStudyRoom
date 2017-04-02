@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 public class RVAdapter extends RecyclerView.Adapter<RVAdapter.RoomViewHolder>{
 
-    public static class RoomViewHolder extends RecyclerView.ViewHolder {
+    public static class RoomViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         CardView cv;
         TextView roomName;
         TextView capacity;
@@ -28,6 +28,12 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.RoomViewHolder>{
             roomName = (TextView)itemView.findViewById(R.id.room_name);
             roomImg = (ImageView)itemView.findViewById(R.id.room_img);
             capacity = (TextView)itemView.findViewById(R.id.capacity);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            System.out.println(roomName.getText());
         }
     }
 

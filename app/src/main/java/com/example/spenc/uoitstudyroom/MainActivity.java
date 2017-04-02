@@ -37,9 +37,9 @@ public class MainActivity extends AppCompatActivity {
     ProgressDialog dialog;
     ArrayList<Room> rooms = new ArrayList<>();
     RecyclerView rv;
-    RVAdapter adapter;
+    RVAdapter rvAdapter;
 
-    final HashMap<String, HashMap<String, BookingRoom>> bookingRooms
+    HashMap<String, HashMap<String, BookingRoom>> bookingRooms
             = new HashMap<>();
 
     @Override
@@ -67,8 +67,8 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView rv = (RecyclerView)findViewById(R.id.rv);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         rv.setLayoutManager(llm);
-        adapter = new RVAdapter(rooms);
-        rv.setAdapter(adapter);
+        rvAdapter = new RVAdapter(rooms);
+        rv.setAdapter(rvAdapter);
 
         //bookingList = (ListView) findViewById(R.id.bookingList);
         dateSpinner = (Spinner) findViewById(R.id.dateSpinner);
@@ -147,7 +147,6 @@ public class MainActivity extends AppCompatActivity {
             for (int i = 0; i < dateIds.size(); i++) {
                 bookingRooms.put(dateIds.get(i),
                         (HashMap) extras.get(dateIds.get(i)));
-                //dateToId.put(dateIds.get(i), dateStrings.get(i));
                 dateToId.put(dateStrings.get(i), dateIds.get(i));
             }
 
@@ -158,39 +157,40 @@ public class MainActivity extends AppCompatActivity {
             dateSpinner.setAdapter(arrayAdapter);
 
             int dateId = 0;
-            rooms.add(new Room("LIB202A",
-                    bookingRooms.get(dateIds.get(dateId)).get("LIB202A").getBookings().size(), R.drawable.lib202a));
-            rooms.add(new Room("LIB202B",
-                    bookingRooms.get(dateIds.get(dateId)).get("LIB202B").getBookings().size(), R.drawable.lib202b));
-            rooms.add(new Room("LIB202C",
-                    bookingRooms.get(dateIds.get(dateId)).get("LIB202C").getBookings().size(), R.drawable.lib202c));
-            rooms.add(new Room("LIB303",
-                    bookingRooms.get(dateIds.get(dateId)).get("LIB303").getBookings().size(), R.drawable.lib303));
-            rooms.add(new Room("LIB304",
-                    bookingRooms.get(dateIds.get(dateId)).get("LIB304").getBookings().size(), R.drawable.lib304));
-            rooms.add(new Room("LIB305",
-                    bookingRooms.get(dateIds.get(dateId)).get("LIB305").getBookings().size(), R.drawable.lib305));
-            rooms.add(new Room("LIB306",
-                    bookingRooms.get(dateIds.get(dateId)).get("LIB306").getBookings().size(), R.drawable.lib306));
-            rooms.add(new Room("LIB307",
-                    bookingRooms.get(dateIds.get(dateId)).get("LIB307").getBookings().size(), R.drawable.lib307));
-            rooms.add(new Room("LIB309",
-                    bookingRooms.get(dateIds.get(dateId)).get("LIB309").getBookings().size(), R.drawable.lib309));
-            rooms.add(new Room("LIB310",
-                    bookingRooms.get(dateIds.get(dateId)).get("LIB310").getBookings().size(), R.drawable.lib310));
 
-            adapter.notifyDataSetChanged();
+            rvAdapter.notifyDataSetChanged();
 
             dateSpinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
 
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    System.out.println("Item selected!");
                     String date = (String) dateSpinner.getSelectedItem();
-                    for(Room room : rooms) {
-                        room.setCapacity(bookingRooms.get(dateToId.get(date)).get(room.getName()).getBookings().size());
-                    }
-                    adapter.notifyDataSetChanged();
+                    System.out.println("Selected " + dateToId.get(date));
+
+                    rooms.clear();
+
+                    rooms.add(new Room("LIB202A",
+                            bookingRooms.get(dateToId.get(date)).get("LIB202A").getBookings().size(), R.drawable.lib202a));
+                    rooms.add(new Room("LIB202B",
+                            bookingRooms.get(dateToId.get(date)).get("LIB202B").getBookings().size(), R.drawable.lib202b));
+                    rooms.add(new Room("LIB202C",
+                            bookingRooms.get(dateToId.get(date)).get("LIB202C").getBookings().size(), R.drawable.lib202c));
+                    rooms.add(new Room("LIB303",
+                            bookingRooms.get(dateToId.get(date)).get("LIB303").getBookings().size(), R.drawable.lib303));
+                    rooms.add(new Room("LIB304",
+                            bookingRooms.get(dateToId.get(date)).get("LIB304").getBookings().size(), R.drawable.lib304));
+                    rooms.add(new Room("LIB305",
+                            bookingRooms.get(dateToId.get(date)).get("LIB305").getBookings().size(), R.drawable.lib305));
+                    rooms.add(new Room("LIB306",
+                            bookingRooms.get(dateToId.get(date)).get("LIB306").getBookings().size(), R.drawable.lib306));
+                    rooms.add(new Room("LIB307",
+                            bookingRooms.get(dateToId.get(date)).get("LIB307").getBookings().size(), R.drawable.lib307));
+                    rooms.add(new Room("LIB309",
+                            bookingRooms.get(dateToId.get(date)).get("LIB309").getBookings().size(), R.drawable.lib309));
+                    rooms.add(new Room("LIB310",
+                            bookingRooms.get(dateToId.get(date)).get("LIB310").getBookings().size(), R.drawable.lib310));
+
+                    rvAdapter.notifyDataSetChanged();
                 }
 
                 @Override
@@ -198,6 +198,7 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             });
+
             dialog.hide();
         }
     }

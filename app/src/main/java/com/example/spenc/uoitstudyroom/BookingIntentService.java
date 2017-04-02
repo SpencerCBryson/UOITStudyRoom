@@ -46,13 +46,10 @@ public class BookingIntentService extends IntentService {
             dateStrings.add(e.getAttribute("title"));
         }
 
-        HashMap<String, BookingRoom> bookingRooms = new HashMap<>();
-
         // Get all postings by date
         for (String id : ids) {
 
-           // ArrayList<BookingRoom> bookingRooms = new ArrayList<>();
-
+            HashMap<String, BookingRoom> bookingRooms = new HashMap<>();
 
             int idInt = Integer.parseInt(id);
             cbuf = dataScraper.postDate(idInt, formData);

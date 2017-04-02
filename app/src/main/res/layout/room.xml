@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:padding="8dp"
+    android:clickable="true"
     >
 
     <android.support.v7.widget.CardView
@@ -10,6 +12,7 @@
         android:id="@+id/cv"
         android:elevation="4dp"
         android:backgroundTint="#3e4eb8"
+        android:background="?android:selectableItemBackground"
         >
 
         <RelativeLayout
