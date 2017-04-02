@@ -8,16 +8,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-
-
-            android:layout_alignBaseline="@+id/booking_list_room"
-
-
-
+            android:layout_alignBaseline="@+id/booking_list_status"
             android:textColor="#000000"
             android:textSize="12sp"
+            android:text="Book/Join"
             tools:text="Book/Join"
             android:layout_alignParentRight="true" />
+
     <RelativeLayout
         android:id="@+id/booking_list_text_layout"
         android:layout_width="wrap_content"
@@ -30,12 +27,12 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:textSize="16sp"
+        android:textSize="24sp"
         tools:text="Title"
         />
 
     <TextView
-        android:id="@+id/booking_list_room"
+        android:id="@+id/booking_list_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/booking_list_title"
@@ -44,22 +41,9 @@
         android:layout_marginTop="2dp"
         android:ellipsize="end"
         android:maxLines="3"
-        android:textSize="12sp"
+        android:textSize="16sp"
         tools:text="Subtitle"
         />
 
-    <TextView
-        android:id="@+id/booking_list_requirements"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/booking_list_room"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="2dp"
-        android:ellipsize="end"
-        android:maxLines="3"
-        android:textSize="10sp"
-        tools:text="Requirements"
-        />
 
 </RelativeLayout>

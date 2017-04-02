@@ -1,5 +1,6 @@
 package com.example.spenc.uoitstudyroom;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
@@ -15,6 +16,8 @@ import java.util.ArrayList;
  */
 
 public class RVAdapter extends RecyclerView.Adapter<RVAdapter.RoomViewHolder>{
+
+    private static Context context;
 
     public static class RoomViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         CardView cv;
@@ -33,14 +36,15 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.RoomViewHolder>{
 
         @Override
         public void onClick(View v) {
-            System.out.println(roomName.getText());
+            ((MainActivity) context).onClickCalled((String)roomName.getText());
         }
     }
 
     ArrayList<Room> rooms;
 
-    RVAdapter(ArrayList<Room> rooms) {
+    RVAdapter(ArrayList<Room> rooms, Context context) {
         this.rooms = rooms;
+        this.context = context;
     }
 
     @Override

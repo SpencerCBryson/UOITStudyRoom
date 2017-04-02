@@ -8,15 +8,14 @@ import java.util.ArrayList;
 
 class Room {
     String name;
-    int capacity;
+    int available;
     int min;
     int imgId;
 
-    public Room(String name, int capacity, int imgId) {
+    public Room(String name, int available, int imgId) {
         this.name = name;
-        this.capacity = capacity;
+        this.available = available;
         this.imgId = imgId;
-        min = capacity/2;
     }
 
     private ArrayList<Room> rooms;
@@ -30,11 +29,11 @@ class Room {
     }
 
     public String getCapacity() {
-        return String.valueOf(capacity) + " bookings available";
+        return String.valueOf(available) + " bookings available";
     }
 
     public void setCapacity(int capacity) {
-        this.capacity = capacity;
+        this.available = capacity;
     }
 
     public int getImgId() {

@@ -28,11 +28,9 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        // CREATE RR
-
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        this.setTitle("Login (optional)");
 
         Intent i = this.getIntent();
 
