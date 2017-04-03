@@ -105,7 +105,6 @@ public class MainActivity extends AppCompatActivity {
                     selectedDateId = dateToId.get(date);
                     System.out.println("Selected " + selectedDateId);
 
-
                     buildRooms(date);
                 }
 

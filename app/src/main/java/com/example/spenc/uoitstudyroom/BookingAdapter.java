@@ -54,28 +54,19 @@ public class BookingAdapter extends BaseAdapter {
         TextView joinTextView =
                 (TextView) rowView.findViewById(R.id.booking_list_join);
 
-//        TextView roomTextView =
-//                (TextView) rowView.findViewById(R.id.booking_list_room);
-//        TextView reqTextView =
-//                (TextView) rowView.findViewById(R.id.booking_list_requirements);
-
 
         Booking booking = (Booking) getItem(position);
 
         titleTextView.setText(booking.getTime());
-        if(booking.getBookingState() != 1) {
+        if(booking.getBookingState() == 0) {
             titleTextView.setTextColor(Color.parseColor("#228B22"));
             statusTextView.setTextColor(Color.parseColor("#228B22"));
             statusTextView.setText("Open");
             joinTextView.setText("Create a new booking");
-        } else {
+        } else if(booking.getBookingState() == 1) {
             statusTextView.setText("Partial");
             joinTextView.setText("Join existing booking");
         }
-
-//        roomTextView.setText(booking.getRoom());
-//        reqTextView.setText(booking.formatReq());
-
 
         return rowView;
     }

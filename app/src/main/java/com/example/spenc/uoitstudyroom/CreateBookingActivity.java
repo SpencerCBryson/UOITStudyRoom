@@ -76,7 +76,8 @@ public class CreateBookingActivity extends AppCompatActivity {
                 postData.put("date", id);
                 postData.put("room", booking.getRoom());
                 postData.put("time", booking.getTime());
-                postData.put("duration", (String) durationSpinner.getSelectedItem());
+                //postData.put("duration", (String) durationSpinner.getSelectedItem()); //FIX ME
+                postData.put("duration","0.5");
                 postData.put("institution", isUOIT ? "uoit" : "dc");
                 postData.put("groupcode", groupCode);
                 postData.put("groupname", groupName);
@@ -106,7 +107,7 @@ public class CreateBookingActivity extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-            dialog.setMessage("Loading bookings... please wait.");
+            dialog.setMessage("Posting booking... please wait.");
             dialog.show();
 
             IntentFilter intentFilter = new IntentFilter();
@@ -145,6 +146,7 @@ public class CreateBookingActivity extends AppCompatActivity {
 
             if(new String(cbuf).contains("HTTP/1.1 500")) {
                 System.out.println("BAD REQUEST");
+                System.out.println(cbuf);
                 err = true;
             }
 
@@ -158,8 +160,8 @@ public class CreateBookingActivity extends AppCompatActivity {
                 dialog.dismiss();
             }
 
-            String successString = "Partial booking successfully created";
-            String failedString = "An error has occured. Check your booking and please try again.";
+            String successString = "Partial booking successfully created!";
+            String failedString = "An error has occurred. Check your booking and please try again.";
 
             if(err)
                 Toast.makeText(context, failedString , Toast.LENGTH_LONG).show();
@@ -179,7 +181,6 @@ public class CreateBookingActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 bList = intent.getExtras().getParcelableArrayList(date);
                 formData = intent.getExtras().getStringArray("formData");
-                dialog.setMessage("Posting booking... please wait.");
                 done = true;
             }
         }

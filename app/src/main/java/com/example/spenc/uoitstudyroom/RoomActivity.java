@@ -50,7 +50,8 @@ public class RoomActivity extends AppCompatActivity {
         bookingList.setAdapter(bookingAdapter);
 
         for (Booking booking : bookingData.getBookings())
-            display.add(booking);
+            if(booking.getBookingState() != 2)
+                display.add(booking);
 
         bookingAdapter.notifyDataSetChanged();
 
@@ -76,12 +77,12 @@ public class RoomActivity extends AppCompatActivity {
                         partialIntent.putExtra("booking", selected);
                         startActivity(partialIntent);
                         break;
-                    case 2:
-                        Intent joinOnlyIntent =
-                                new Intent(view.getContext(), CreateBookingActivity.class);
-                        joinOnlyIntent.putExtra("booking", selected);
-                        startActivity(joinOnlyIntent);
-                        break;
+//                    case 2:
+//                        Intent joinOnlyIntent =
+//                                new Intent(view.getContext(), CreateBookingActivity.class);
+//                        joinOnlyIntent.putExtra("booking", selected);
+//                        startActivity(joinOnlyIntent);
+//                        break;
                 }
             }
         });

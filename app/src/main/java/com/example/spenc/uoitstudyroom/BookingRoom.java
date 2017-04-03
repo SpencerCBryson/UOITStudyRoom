@@ -15,7 +15,12 @@ public class BookingRoom implements Parcelable {
     String room;
 
     public ArrayList<Booking> getBookings() {
-        return bookings;
+        ArrayList<Booking> openBookings = new ArrayList<>();
+        for(Booking booking : bookings)
+            if(booking.getBookingState() != 2)
+                openBookings.add(booking);
+
+        return openBookings;
     }
 
     ArrayList<Booking> bookings = new ArrayList<>();

@@ -81,7 +81,7 @@ public class BookingIntentService extends IntentService {
         int bookingState = 2;
         if (data.contains("next=book"))
             bookingState = 0;
-        else if (data.contains("viewleaveorjoin"))
+        else if (data.contains("next=joinorleave"))
             bookingState = 1;
 
         String reg = "\\d{1,2}:..\\s[A|P]M";
