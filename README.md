@@ -3,6 +3,11 @@ An Android application that displays, manages and books study room sessions at U
 
 [View Domain Model](https://github.com/SpencerCBryson/UOITStudyRoom/wiki)
 
+## Acknowledgements
+This application was designed by three second-year Computer Science students as a course project for Software Systems Development & Integration at UOIT.
+
+Use of this application is subject to the [terms and conditions](https://rooms.library.dc-uoit.ca/uoit_studyrooms/instruction.aspx), this application is no way endorsed by UOIT or DC.
+
 ## Data Scraper
 Handles all connectionss to UOIT's library study room booker, and scrapes the needed non-parsed data in order to build a list of bookings.
 SSL sockets are used to send HTTP headers to the webserver to fetch the raw HTML that is passed off to the Parser class to extract needed data. The scraper also provides the functionality for posting new bookings.
