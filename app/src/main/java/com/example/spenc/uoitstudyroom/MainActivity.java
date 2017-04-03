@@ -18,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -122,37 +123,42 @@ public class MainActivity extends AppCompatActivity {
         rooms.clear();
 
         rooms.add(new Room("LIB202A",
-                bookingRooms.get(dateToId.get(date)).get("LIB202A").getBookings().size(), R.drawable.lib202a));
+                bookingRooms.get(selectedDateId).get("LIB202A").getBookings().size(), R.drawable.lib202a));
         rooms.add(new Room("LIB202B",
-                bookingRooms.get(dateToId.get(date)).get("LIB202B").getBookings().size(), R.drawable.lib202b));
+                bookingRooms.get(selectedDateId).get("LIB202B").getBookings().size(), R.drawable.lib202b));
         rooms.add(new Room("LIB202C",
-                bookingRooms.get(dateToId.get(date)).get("LIB202C").getBookings().size(), R.drawable.lib202c));
+                bookingRooms.get(selectedDateId).get("LIB202C").getBookings().size(), R.drawable.lib202c));
         rooms.add(new Room("LIB303",
-                bookingRooms.get(dateToId.get(date)).get("LIB303").getBookings().size(), R.drawable.lib303));
+                bookingRooms.get(selectedDateId).get("LIB303").getBookings().size(), R.drawable.lib303));
         rooms.add(new Room("LIB304",
-                bookingRooms.get(dateToId.get(date)).get("LIB304").getBookings().size(), R.drawable.lib304));
+                bookingRooms.get(selectedDateId).get("LIB304").getBookings().size(), R.drawable.lib304));
         rooms.add(new Room("LIB305",
-                bookingRooms.get(dateToId.get(date)).get("LIB305").getBookings().size(), R.drawable.lib305));
+                bookingRooms.get(selectedDateId).get("LIB305").getBookings().size(), R.drawable.lib305));
         rooms.add(new Room("LIB306",
-                bookingRooms.get(dateToId.get(date)).get("LIB306").getBookings().size(), R.drawable.lib306));
+                bookingRooms.get(selectedDateId).get("LIB306").getBookings().size(), R.drawable.lib306));
         rooms.add(new Room("LIB307",
-                bookingRooms.get(dateToId.get(date)).get("LIB307").getBookings().size(), R.drawable.lib307));
+                bookingRooms.get(selectedDateId).get("LIB307").getBookings().size(), R.drawable.lib307));
         rooms.add(new Room("LIB309",
-                bookingRooms.get(dateToId.get(date)).get("LIB309").getBookings().size(), R.drawable.lib309));
+                bookingRooms.get(selectedDateId).get("LIB309").getBookings().size(), R.drawable.lib309));
         rooms.add(new Room("LIB310",
-                bookingRooms.get(dateToId.get(date)).get("LIB310").getBookings().size(), R.drawable.lib310));
+                bookingRooms.get(selectedDateId).get("LIB310").getBookings().size(), R.drawable.lib310));
 
         rvAdapter.notifyDataSetChanged();
     }
 
     public void onClickCalled(String roomName) {
-        Intent intent = new Intent(getBaseContext(), RoomActivity.class);
 
-        String dateId = dateToId.get((String) dateSpinner.getSelectedItem());
-        intent.putExtra("bookingData",bookingRooms.get(dateId).get(roomName));
-        intent.putExtra("formData",formData);
-        intent.putExtra("dateId",selectedDateId);
+        if(bookingRooms.get(selectedDateId).get(roomName).getBookings().size() != 0) {
+            Intent intent = new Intent(getBaseContext(), RoomActivity.class);
 
-        startActivity(intent);
+            String dateId = dateToId.get((String) dateSpinner.getSelectedItem());
+            intent.putExtra("bookingData", bookingRooms.get(dateId).get(roomName));
+            intent.putExtra("formData", formData);
+            intent.putExtra("dateId", selectedDateId);
+
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, "No available bookings" , Toast.LENGTH_LONG).show();
+        }
     }
 }
