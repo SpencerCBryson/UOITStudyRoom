@@ -81,8 +81,8 @@ public class CreateBookingActivity extends AppCompatActivity {
                 postData.put("institution", isUOIT ? "uoit" : "dc");
                 postData.put("groupcode", groupCode);
                 postData.put("groupname", groupName);
-                postData.put("password", studentid);
-                postData.put("studentid", password);
+                postData.put("password", password);
+                postData.put("studentid", studentid);
                 postData.put("notes", "test");
 
                 AsyncTask task = new CreateBookingTask(v.getContext()).execute(postData);
