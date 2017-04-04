@@ -35,7 +35,7 @@ public class CreateBookingActivity extends AppCompatActivity {
         final String id = extras.getString("date");
         formData = extras.getStringArray("formData");
 
-        SharedPreferences preferences = getSharedPreferences("login", Activity.MODE_PRIVATE);
+        final SharedPreferences preferences = getSharedPreferences("login", Activity.MODE_PRIVATE);
 
         final String studentid = preferences.getString("studentid", "");
         final String password = preferences.getString("password", "");
@@ -58,7 +58,7 @@ public class CreateBookingActivity extends AppCompatActivity {
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (studentid.isEmpty() || password.isEmpty()) {
+                if (!preferences.getBoolean("valid", false)) {
                     Intent i = new Intent(v.getContext(), LoginActivity.class);
                     i.putExtra("skipped", true);
                     startActivity(i);

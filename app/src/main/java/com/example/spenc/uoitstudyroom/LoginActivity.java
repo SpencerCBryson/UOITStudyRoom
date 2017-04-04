@@ -1,9 +1,12 @@
 package com.example.spenc.uoitstudyroom;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Build;
 import android.os.Bundle;;
@@ -15,6 +18,9 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.HashMap;
 
 /**
  * Created by michael on 28/03/17.
@@ -24,6 +30,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mSIDView;
     private EditText mPasswordView;
     Boolean skipped = false;
+    ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
+                    attemptLogin(textView.getContext());
                     return true;
                 }
                 return false;
@@ -54,13 +61,17 @@ public class LoginActivity extends AppCompatActivity {
         signInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                attemptLogin(view.getContext());
             }
         });
         skipButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
+                SharedPreferences preferences = getSharedPreferences("login", Activity.MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
+
+                editor.putBoolean("valid", false);
             }
         });
     }
@@ -69,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
      * Attempts to sign in or register the account specified by the login form.
      * errors are presented and no actual login attempt is made.
      */
-    private void attemptLogin() {
+    private void attemptLogin(Context context) {
         // Reset errors.
         mSIDView.setError(null);
         mPasswordView.setError(null);
@@ -109,15 +120,89 @@ public class LoginActivity extends AppCompatActivity {
             focusView.requestFocus();
         } else {
             //Login Passed, Finish task and move on to MainActivity (BookingList)
-            SharedPreferences preferences = getSharedPreferences("login", Activity.MODE_PRIVATE);
-            SharedPreferences.Editor editor = preferences.edit();
+            ValidateLoginTask validateLoginTask =
+                    new ValidateLoginTask(sid, password, context);
 
-            editor.putString("studentid", sid);
-            editor.putString("password", password);
+            validateLoginTask.execute((Void) null);
+        }
+    }
 
-            editor.apply();
+    /**
+     * Test user login information to see if it is valid
+     */
+    class ValidateLoginTask extends AsyncTask<Void, Void, Void> {
 
-            finish();
+        private String studentid;
+        private String password;
+        private Context context;
+        private boolean err = false;
+
+        ValidateLoginTask(String studentid, String password, Context context) {
+            this.studentid = studentid;
+            this.password = password;
+            this.context = context;
+            dialog = new ProgressDialog(context);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            dialog.setMessage("Attempting Login.");
+            dialog.show();
+
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(BookingIntentService.SCRAPE_DONE);
+
+            Intent i = new Intent(context, BookingIntentService.class);
+            context.startService(i);
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+
+            String successString = "Login Successful!";
+            String failedString = "Login failed. Check your login credentials again.";
+
+            if(err)
+                Toast.makeText(context, failedString, Toast.LENGTH_LONG).show();
+            else {
+                Toast.makeText(context, successString, Toast.LENGTH_LONG).show();
+                SharedPreferences preferences = getSharedPreferences("login", Activity.MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
+
+                editor.putBoolean("valid", true);
+                editor.putString("studentid", studentid);
+                editor.putString("password", password);
+
+                editor.apply();
+                finish();
+            }
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            HashMap<String, String> postData = new HashMap<>();
+            DataScraper ds = new DataScraper();
+            char[] cbuf = ds.getRawLoginHtml();
+
+            Parser parser = new Parser(cbuf);
+
+            postData.put("vstate", parser.select("input", "name", "__VIEWSTATE").get(0).getAttribute("value"));
+            postData.put("vstategen", parser.select("input", "name", "__VIEWSTATEGENERATOR").get(0).getAttribute("value"));
+            postData.put("evalid", parser.select("input", "name", "__EVENTVALIDATION").get(0).getAttribute("value"));
+            postData.put("password", password);
+            postData.put("studentid", studentid);
+
+            cbuf = ds.postLogin(postData);
+            parser = new Parser(cbuf);
+
+            if(parser.select("span", "id", "ContentPlaceHolder1_LabelError") != null) {
+                err = true;
+            }
+
+            return null;
         }
     }
 

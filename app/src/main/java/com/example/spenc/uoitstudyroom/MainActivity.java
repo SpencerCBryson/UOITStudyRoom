@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -60,7 +61,9 @@ public class MainActivity extends AppCompatActivity {
         dialog.setMessage("Loading bookings... please wait.");
         dialog.show();
 
-        startActivity(new Intent(this, LoginActivity.class));
+        SharedPreferences sharedPreferences = getSharedPreferences("login", Activity.MODE_PRIVATE);
+        if(!sharedPreferences.getBoolean("valid", false))
+            startActivity(new Intent(this, LoginActivity.class));
 
 
         super.onCreate(savedInstanceState);

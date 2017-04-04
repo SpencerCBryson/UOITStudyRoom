@@ -74,6 +74,33 @@ class DataScraper {
         return cbuf;
     }
 
+    char[] getRawLoginHtml() {
+        char[] cbuf = null;
+
+        connect();
+
+        if(probeSocket()) {
+            try {
+                // Send a GET header to the HTTP server to receive HTML data of the page we want
+                PrintWriter pw = new PrintWriter(this.socket.getOutputStream());
+                pw.print("GET /uoit_studyrooms/myreservations.aspx HTTP/1.1\r\n");
+                pw.print("Host: rooms.library.dc-uoit.ca\r\n");
+                pw.print("Connection: keep-alive\r\n");
+                pw.print("User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64)\r\n\r\n");
+                pw.flush();
+
+                cbuf = receive();
+
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            //TODO: Handle no connection
+            System.out.println("[ERROR] No connection established!");
+        }
+        return cbuf;
+    }
+
     private char[] receive() throws IOException {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
@@ -127,6 +154,8 @@ class DataScraper {
             next = "joinorleave.aspx";
         else if(bookingState == 2) // complete booking
             next = "viewleaveorjoin.aspx";
+        else if(bookingState == 3) // login validation
+            next = "myreservations.aspx";
         else
             next = "joingroup.aspx";
 
@@ -261,6 +290,30 @@ class DataScraper {
             } catch(IOException e) {
                 e.printStackTrace();
             }
+        }
+
+        return cbuf;
+    }
+
+    char[] postLogin(HashMap<String, String> postData) {
+        char[] cbuf = null;
+        String boundary = "----BookingBoundary7MA4YWxkTrZu0gW";
+        String cr = "\r\n";
+        String cd = "Content-Disposition: form-data; ";
+
+        String payload =
+                "--" + boundary + cr + cd + "name=\"__EVENTVALIDATION\"\r\n\r\n" + postData.get("evalid") + cr +
+                        "--" + boundary + cr + cd + "name=\"__VIEWSTATE\"\r\n\r\n" + postData.get("vstate") + cr +
+                        "--" + boundary + cr + cd + "name=\"__VIEWSTATEGENERATOR\"\r\n\r\n" + postData.get("vstategen") + cr +
+                        "--" + boundary + cr + cd + "name=\"ctl00$ContentPlaceHolder1$TextBoxPassword\"\r\n\r\n" + postData.get("password") + cr +
+                        "--" + boundary + cr + cd + "name=\"ctl00$ContentPlaceHolder1$TextBoxID\"\r\n\r\n" + postData.get("studentid") + cr +
+                        "--" + boundary + cr + cd + "name=\"ctl00$ContentPlaceHolder1$ButtonListBookings\"\r\n\r\n" + "My Bookings" + cr +
+                        "--" + boundary + "--";
+
+        try {
+            cbuf = sendPayload(payload, 3);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return cbuf;
