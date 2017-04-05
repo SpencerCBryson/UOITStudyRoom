@@ -23,8 +23,8 @@ class Parser {
      */
     ArrayList<Element> getElements(String elemFind) {
         String elemName = elemFind;
-        elemFind = "<" + elemFind + ">";
-        String elemClose = "</" + elemName ;
+        elemFind = "<" + elemFind;
+        String elemClose = "</" + elemName;
         int elemNameLen = elemFind.length();
         int elemCloseLen = elemClose.length();
         int elementStart = 0;

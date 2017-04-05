@@ -74,33 +74,6 @@ class DataScraper {
         return cbuf;
     }
 
-    char[] getPartialBookinghtml() {
-        char[] cbuf = null;
-
-        connect();
-
-        if(probeSocket()) {
-            try {
-                // Send a GET header to the HTTP server to receive HTML data of the page we want
-                PrintWriter pw = new PrintWriter(this.socket.getOutputStream());
-                pw.print("GET /uoit_studyrooms/calendar.aspx HTTP/1.1\r\n");
-                pw.print("Host: rooms.library.dc-uoit.ca\r\n");
-                pw.print("Connection: keep-alive\r\n");
-                pw.print("User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64)\r\n\r\n");
-                pw.flush();
-
-                cbuf = receive();
-
-            } catch(IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            //TODO: Handle no connection
-            System.out.println("[ERROR] No connection established!");
-        }
-        return cbuf;
-    }
-
     char[] getRawLoginHtml() {
         char[] cbuf = null;
 
@@ -137,12 +110,12 @@ class DataScraper {
         int max_iter = 20;
 
         // Retrieve header contents
-       // System.out.println(br.readLine());
+        //System.out.println(br.readLine());
         for(int i = 0; i < max_iter; i++) {
             line = br.readLine();
             if (line.contains("Set-Cookie: ASP.NET_SessionId")) { // scrape session ID cookie
-                this.sessionID = "ASP.NET_SessionId" + line.substring(29,54);
-                //System.out.println(this.sessionID);
+                if(sessionID == null) this.sessionID = "ASP.NET_SessionId" + line.substring(29,54);
+                System.out.println(this.sessionID);
             } else if (line.contains("Content-Length:")) {
                 String num = line.substring(16);
                 content_length = Integer.parseInt(num);
