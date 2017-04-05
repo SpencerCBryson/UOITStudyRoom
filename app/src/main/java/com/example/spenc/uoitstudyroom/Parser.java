@@ -23,9 +23,10 @@ class Parser {
      */
     ArrayList<Element> getElements(String elemFind) {
         String elemName = elemFind;
-        elemFind = "<" + elemFind;
-        String elemClose = "</" + elemName;
+        elemFind = "<" + elemFind + ">";
+        String elemClose = "</" + elemName ;
         int elemNameLen = elemFind.length();
+        int elemCloseLen = elemClose.length();
         int elementStart = 0;
         Boolean found = false;
         ArrayList<Element> elements = new ArrayList<>();
@@ -47,16 +48,27 @@ class Parser {
                 elemString = html.substring(elementStart, i + 1);
                 elem.addAttributes(elemString);
                 elements.add(elem);
-                int endContent = 0;
+                int end = 0;
+                int depth = 0;
 
                 if (!elemString.contains("/>")) {
-                    for (int j = i + 1; j < html.length(); j++)
-                        if (html.substring(j, j + elemClose.length()).equals(elemClose)) {
-                            endContent = j;
-                            break;
-                        }
 
-                    elem.setContent(html.substring(i, endContent));
+                    for (int j = i + 1; j < html.length() - elemNameLen; j++) {
+
+                        if (html.substring(j, j + elemNameLen).equals(elemName))
+                            depth += 1;
+
+                        if (html.substring(j, j + elemCloseLen).equals(elemClose)) {
+                            if (depth > 0)
+                                depth -= 1;
+                            else {
+                                end = j;
+                                break;
+                            }
+                        }
+                    }
+
+                    elem.setContent(html.substring(i + 1, end));
                 } else {
                     elem.setContent("");
                 }

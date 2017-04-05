@@ -23,6 +23,7 @@
 
         <activity android:name=".CreateBookingActivity"></activity>
         <activity android:name=".RoomActivity"></activity>
+        <activity android:name=".JoinBookingActivity"></activity>
         <activity android:name=".LoginActivity" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.LOGIN" />

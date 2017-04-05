@@ -73,8 +73,10 @@ public class RoomActivity extends AppCompatActivity {
                         break;
                     case 1:
                         Intent partialIntent =
-                                new Intent(view.getContext(), CreateBookingActivity.class);
+                                new Intent(view.getContext(), JoinBookingActivity.class);
+                        partialIntent.putExtra("date", dateId);
                         partialIntent.putExtra("booking", selected);
+                        partialIntent.putExtra("formData", formData);
                         startActivity(partialIntent);
                         break;
 //                    case 2:

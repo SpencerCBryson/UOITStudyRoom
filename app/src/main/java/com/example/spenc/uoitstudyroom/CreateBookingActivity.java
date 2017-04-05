@@ -121,7 +121,6 @@ public class CreateBookingActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(HashMap<String, String>... params) {
-
             HashMap<String,String> postData = params[0];
             DataScraper ds = new DataScraper();
 

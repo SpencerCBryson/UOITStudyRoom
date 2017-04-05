@@ -74,6 +74,33 @@ class DataScraper {
         return cbuf;
     }
 
+    char[] getPartialBookinghtml() {
+        char[] cbuf = null;
+
+        connect();
+
+        if(probeSocket()) {
+            try {
+                // Send a GET header to the HTTP server to receive HTML data of the page we want
+                PrintWriter pw = new PrintWriter(this.socket.getOutputStream());
+                pw.print("GET /uoit_studyrooms/calendar.aspx HTTP/1.1\r\n");
+                pw.print("Host: rooms.library.dc-uoit.ca\r\n");
+                pw.print("Connection: keep-alive\r\n");
+                pw.print("User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64)\r\n\r\n");
+                pw.flush();
+
+                cbuf = receive();
+
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            //TODO: Handle no connection
+            System.out.println("[ERROR] No connection established!");
+        }
+        return cbuf;
+    }
+
     char[] getRawLoginHtml() {
         char[] cbuf = null;
 
@@ -348,7 +375,7 @@ class DataScraper {
         return cbuf;
     }
 
-    char[] selectPartialBooking(HashMap<String,String> postData, String[] bookingData) {
+    char[] selectPartialBooking(HashMap<String,String> postData) {
         char[] cbuf;
         String btnPlaceHolder, radioPlaceHolder;
         String boundary = "----BookingBoundary7MA4YWxkTrZu0gW";
@@ -376,7 +403,7 @@ class DataScraper {
             e.printStackTrace();
         }
 
-        cbuf = selectBooking(bookingData[0],bookingData[1],3);
+        cbuf = selectBooking(postData.get("room"), postData.get("time"), 4);
 
         return cbuf;
     }
@@ -396,7 +423,7 @@ class DataScraper {
                         "--" + boundary + cr + cd + "name=\"ctl00$ContentPlaceHolder1$ButtonJoin\"\r\n\r\n" + postData.get("btn") + cr +
                         "--" + boundary + "--";
         try {
-            cbuf = sendPayload(payload, 3);
+            cbuf = sendPayload(payload, 4);
         } catch (IOException e) {
             e.printStackTrace();
         }
