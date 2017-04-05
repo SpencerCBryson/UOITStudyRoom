@@ -142,6 +142,10 @@ public class JoinBookingActivity extends AppCompatActivity {
 
             Parser parser = new Parser(cbuf);
 
+            postData.put("vstate", parser.select("input", "name", "__VIEWSTATE").get(0).getAttribute("value"));
+            postData.put("vstategen", parser.select("input", "name", "__VIEWSTATEGENERATOR").get(0).getAttribute("value"));
+            postData.put("evalid", parser.select("input", "name", "__EVENTVALIDATION").get(0).getAttribute("value"));
+
             ArrayList<Element> elems = parser.getElements("b>");
             ArrayList<Element> elems2 = parser.getElements("label");
 
@@ -160,9 +164,6 @@ public class JoinBookingActivity extends AppCompatActivity {
 
             groups.add("Create new group!");
 
-
-
-
             return null;
         }
     }
@@ -172,7 +173,6 @@ public class JoinBookingActivity extends AppCompatActivity {
         ProgressDialog dialog;
         String groupName;
         String code;
-        Boolean err = false;
 
         JoinBookingTask(Context context, String groupName, String code) {
             this.context = context;
@@ -202,23 +202,19 @@ public class JoinBookingActivity extends AppCompatActivity {
             }
 
             String successString = "Partial booking successfully joined!";
-            String failedString = "An error has occurred. Check your booking and please try again.";
 
-            if(err)
-                Toast.makeText(context, failedString , Toast.LENGTH_LONG).show();
-            else {
-                Toast.makeText(context, successString, Toast.LENGTH_LONG).show();
-                finish();
-            }
+            Toast.makeText(context, successString, Toast.LENGTH_LONG).show();
+            finish();
+
         }
 
         @Override
         protected Void doInBackground(HashMap<String, String>... params) {
             HashMap<String,String> postData = params[0];
-            ds = new DataScraper();
             postData.put("radio", code);
 
             char[] cbuf = ds.selectPartialBooking(postData);
+
             Parser parser = new Parser(cbuf);
 
             postData.put("vstate", parser.select("input", "name", "__VIEWSTATE").get(0).getAttribute("value"));
@@ -229,11 +225,7 @@ public class JoinBookingActivity extends AppCompatActivity {
             cbuf = ds.joinPartialBooking(postData);
 
             parser = new Parser(cbuf);
-
-            if(parser.select("span", "id", "ContentPlaceHolder1_LabelError") != null) {
-                err = true;
-                System.out.println(cbuf);
-            }
+            System.out.println(cbuf);
 
             return null;
         }

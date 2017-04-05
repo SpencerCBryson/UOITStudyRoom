@@ -114,8 +114,8 @@ class DataScraper {
         for(int i = 0; i < max_iter; i++) {
             line = br.readLine();
             if (line.contains("Set-Cookie: ASP.NET_SessionId")) { // scrape session ID cookie
-                if(sessionID == null) this.sessionID = "ASP.NET_SessionId" + line.substring(29,54);
-                System.out.println(this.sessionID);
+                if (sessionID == null) this.sessionID = "ASP.NET_SessionId" + line.substring(29,54);
+                //System.out.println(this.sessionID);
             } else if (line.contains("Content-Length:")) {
                 String num = line.substring(16);
                 content_length = Integer.parseInt(num);
