@@ -3,6 +3,7 @@ package com.example.spenc.uoitstudyroom;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -42,6 +43,8 @@ public class Instructions extends AppCompatActivity {
             inputGuide.close();
             howToBook.setText(populateHowTo);
             guidelines.setText(populateGuidelines);
+            howToBook.setMovementMethod(new ScrollingMovementMethod());
+            guidelines.setMovementMethod(new ScrollingMovementMethod());
         }catch (IOException e){
             System.exit(0);
         }
