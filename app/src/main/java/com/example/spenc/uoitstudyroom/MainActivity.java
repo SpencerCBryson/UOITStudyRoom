@@ -99,6 +99,13 @@ public class MainActivity extends AppCompatActivity {
                 editor.putString("studentid", "");
                 editor.putString("password", "");
                 editor.apply();
+                break;
+
+            case R.id.action_instructions:
+                Intent intent = new Intent(getBaseContext(), Instructions.class);
+                startActivity(intent);
+                break;
+
         }
 
         return true;

@@ -1,0 +1,16 @@
+1. Select the day that you would like to book the room
+2. Select a room and click an open time in that column
+3. Fill in all fields:
+  - Group Name
+  - Group code (4 characters)
+  - Duration
+  - Institution
+  - Student ID
+  - Network Password
+4. Click on Create group
+5. An incomplete booking is shown by the word “partial”
+6. One or two additional group member IDs and Passwords will be needed to complete and maintain the reservation
+7. To complete the reservation, the second/third group member needs to “join” your group by clicking on your incomplete booking for the same day, time, and room
+8. Select the appropriate group name and click on “Create or Join a Group”
+9. Fill in all fields (as above)
+10. Once the appropriate numbers of ID/Passwords have been entered, the reservation is complete!

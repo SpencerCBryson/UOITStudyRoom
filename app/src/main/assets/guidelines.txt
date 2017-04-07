@@ -1,0 +1,9 @@
+1. Your student ID can be used only once per day to a maximum of 20 bookings per term.
+2. Bookings are available for a maximum of 2 hours per day.
+3. Bookings can be made one day in advance.
+4. Bookings for tomorrow will open at 10:00 A.M. today.
+5. Bookings cannot be created five minutes before the start time.
+6. You cannot “join” or “cancel” a booking 30 minutes before the booking start time.
+7. When a group completes a booking, all incomplete reservations associated with the same time/room are voided. If your reservation has been voided, you may re-use your student ID to reserve or complete a booking for the same day.
+8. Your Library Account must be in good standing in order to reserve a room.
+9. The booking system will not accept passwords longer than 10 characters and all characters must be alphanumeric.
