@@ -44,7 +44,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.RoomViewHolder>{
 
     RVAdapter(ArrayList<Room> rooms, Context context) {
         this.rooms = rooms;
-        this.context = context;
+        RVAdapter.context = context;
     }
 
     @Override
