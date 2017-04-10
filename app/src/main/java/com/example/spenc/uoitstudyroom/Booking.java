@@ -122,14 +122,14 @@ public class Booking implements Parcelable {
         return m.group();
     }
 
-    ArrayList<String> getValidDurations() {
+    String[] getValidDurations() {
         // TODO: IMPLEMENT THE FOLLOWING METHOD TO SCRAPE AND CHECK FOLLOWING BOOKINGS FOR VALID DURATIONS.
 
         // Bootleg version to follow
 
-        return validDurations;
+        //return validDurations;
 
-        // return new String[] {"0.5", "1", "1.5", "2"};
+        return new String[] {"0.5", "1", "1.5", "2"};
     }
 
     String getInfo() {

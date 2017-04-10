@@ -57,9 +57,7 @@ public class JoinBookingActivity extends AppCompatActivity {
 
         bookingText.setText(
                 currentBooking.getRoom() + "\n" +
-                currentBooking.getTime() + "\n" +
-                currentBooking.getCapacity() + "\n" +
-                currentBooking.getMinReq()
+                currentBooking.getTime() + "\n"
         );
 
         // Select booking, scrape & display groups
@@ -112,7 +110,7 @@ public class JoinBookingActivity extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-            dialog.setMessage("Loading booking.");
+            dialog.setMessage("Loading booking");
             dialog.show();
 
             IntentFilter intentFilter = new IntentFilter();

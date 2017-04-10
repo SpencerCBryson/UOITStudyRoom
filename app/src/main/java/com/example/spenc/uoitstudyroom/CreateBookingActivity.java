@@ -76,8 +76,8 @@ public class CreateBookingActivity extends AppCompatActivity {
                 postData.put("date", id);
                 postData.put("room", booking.getRoom());
                 postData.put("time", booking.getTime());
-                //postData.put("duration", (String) durationSpinner.getSelectedItem()); //FIX ME
-                postData.put("duration","0.5");
+                postData.put("duration", (String) durationSpinner.getSelectedItem()); //FIX ME
+                //postData.put("duration","0.5");
                 postData.put("institution", isUOIT ? "uoit" : "dc");
                 postData.put("groupcode", groupCode);
                 postData.put("groupname", groupName);
