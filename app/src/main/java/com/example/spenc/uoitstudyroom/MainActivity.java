@@ -102,6 +102,9 @@ public class MainActivity extends AppCompatActivity {
                 editor.putString("studentid", "");
                 editor.putString("password", "");
                 editor.apply();
+
+                String signOutText = "Successfully signed out!";
+                Toast.makeText(this, signOutText, Toast.LENGTH_LONG).show();
                 break;
 
             case R.id.action_instructions:
