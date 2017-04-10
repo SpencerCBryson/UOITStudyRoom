@@ -1,6 +1,8 @@
 # UOITStudyRoom
 An Android application that displays, manages and books study room sessions at UOIT. Without any external libraries, the application interacts with UOIT/DC's library study room management system by manually sending HTTP requests via SSL sockets.
 
+[View Demo Video](https://www.youtube.com/watch?v=4s-K0GbKuMw)
+
 [View Domain Model](https://github.com/SpencerCBryson/UOITStudyRoom/wiki)
 
 ## Acknowledgements
