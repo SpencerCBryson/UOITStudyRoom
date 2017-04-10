@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
         if(bookingRooms.get(selectedDateId).get(roomName).getBookings().size() != 0) {
             Intent intent = new Intent(getBaseContext(), RoomActivity.class);
 
-            String dateId = dateToId.get((String) dateSpinner.getSelectedItem());
+            String dateId = dateToId.get(dateSpinner.getSelectedItem());
             intent.putExtra("bookingData", bookingRooms.get(dateId).get(roomName));
             intent.putExtra("formData", formData);
             intent.putExtra("dateId", selectedDateId);
