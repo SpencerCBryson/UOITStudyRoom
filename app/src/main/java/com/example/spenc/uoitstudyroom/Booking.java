@@ -127,7 +127,6 @@ public class Booking implements Parcelable {
 
         // Bootleg version to follow
 
-        //return validDurations;
 
         return new String[] {"0.5", "1", "1.5", "2"};
     }
