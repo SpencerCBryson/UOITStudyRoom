@@ -53,21 +53,11 @@ public class MainActivity extends AppCompatActivity {
         dialog = new ProgressDialog(this);
         this.setTitle("Select a room");
 
-        IntentFilter intentFilter = new IntentFilter(BookingIntentService.SCRAPE_DONE);
-        Intent scrape = new Intent(this, BookingIntentService.class);
-        this.startService(scrape);
-        ResponseReceiver rr = new ResponseReceiver();
-        LocalBroadcastManager.getInstance(this).registerReceiver(
-                rr, intentFilter
-        );
-
-        dialog.setMessage("Loading bookings... please wait.");
-        dialog.show();
-
         SharedPreferences sharedPreferences = getSharedPreferences("login", Activity.MODE_PRIVATE);
         if(!sharedPreferences.getBoolean("valid", false))
             startActivity(new Intent(this, LoginActivity.class));
 
+        refresh();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -79,6 +69,19 @@ public class MainActivity extends AppCompatActivity {
         rv.setAdapter(rvAdapter);
 
         dateSpinner = (Spinner) findViewById(R.id.dateSpinner);
+    }
+
+    private void refresh() {
+        IntentFilter intentFilter = new IntentFilter(BookingIntentService.SCRAPE_DONE);
+        Intent scrape = new Intent(this, BookingIntentService.class);
+        this.startService(scrape);
+        ResponseReceiver rr = new ResponseReceiver();
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                rr, intentFilter
+        );
+
+        dialog.setMessage("Loading bookings... please wait.");
+        dialog.show();
     }
 
     @Override
@@ -106,6 +109,9 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
 
+            case R.id.action_refresh:
+                refresh();
+                break;
         }
 
         return true;
